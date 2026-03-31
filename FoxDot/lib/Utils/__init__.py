@@ -5,18 +5,12 @@
 
 """
 
-from __future__ import absolute_import, division, print_function
-
 import sys
 import json
 import itertools
 from socket import timeout as socket_timeout
-
-try:
-    from urllib.request import urlopen
-    from urllib.error import URLError
-except ImportError:
-    from urllib2 import urlopen, URLError
+from urllib.request import urlopen
+from urllib.error import URLError
 
 # Functions
 

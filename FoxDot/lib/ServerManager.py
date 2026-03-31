@@ -1,12 +1,7 @@
 """ Handles OSC messages being sent to SuperCollider.
 """
-from __future__ import absolute_import, division, print_function
 import sys
-
-if sys.version_info[0] > 2:
-    import queue
-else:
-    import Queue as queue
+import queue
 
 import json
 import socket
@@ -22,10 +17,7 @@ from threading import Thread
 from .Code import WarningMsg
 from .Settings import *
 
-if sys.version_info[0] > 2:
-    from .OSC3 import *
-else:
-    from .OSC import *
+from .OSC3 import *
 
 # Keep in sync with Info.scd
 ServerInfo = namedtuple(

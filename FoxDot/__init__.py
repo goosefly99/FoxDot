@@ -17,8 +17,6 @@ the FoxDot classes and how to implement them.
 Copyright Ryan Kirkbride 2015
 """
 
-from __future__ import absolute_import, division, print_function
-
 def boot_supercollider():
     """ Uses subprocesses to boot supercollider from the cli """
 
@@ -31,9 +29,7 @@ def boot_supercollider():
     try:
         import psutil
     except ImportError:
-        os.system("pip install psutil")
-        import sys
-        sys.exit("Installed psutil, please start FoxDot again.")
+        raise ImportError("psutil is required. Install it with: pip install psutil>=7.0")
 
     sclangpath = "" #find path to sclang
 

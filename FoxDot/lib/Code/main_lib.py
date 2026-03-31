@@ -1,5 +1,3 @@
-from __future__ import absolute_import, division, print_function
-
 import sys
 import re
 import os.path
@@ -7,14 +5,8 @@ import time
 from traceback import format_exc as error_stack
 from types import CodeType, FunctionType
 
-try:
+TypeType = type
 
-    from types import TypeType
-
-except ImportError:
-
-    TypeType = type
-    
 from ..Utils import modi
 from ..Settings import *
 
@@ -64,18 +56,9 @@ class CodeString:
     def __str__(self):
         return self.raw
 
-if sys.version_info[0] > 2:
-
-    def clean(string):
-        string = string.replace("\u03BB", "lambda")
-        return string
-
-else:
-
-    def clean(string):
-        """ Removes non-ascii characters from a string """
-        string = string.replace(u"\u03BB", "lambda")
-        return string.encode("ascii", "replace")
+def clean(string):
+    string = string.replace("\u03BB", "lambda")
+    return string
 
 class _StartupFile:
     def __init__(self, path):
