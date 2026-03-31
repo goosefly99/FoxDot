@@ -12,6 +12,7 @@
 from __future__ import absolute_import, division, print_function
 
 from .lib import FoxDotCode, handle_stdin
+from .lib.Settings import REPL_WEBSOCKET_PORT
 
 import argparse
 
@@ -26,6 +27,8 @@ parser.add_argument('-s', '--startup', action='store', help="use an alternate st
 parser.add_argument('-S', '--simple', action='store_true', help="run FoxDot in simple (accessible) mode")
 parser.add_argument('-n', '--no-startup', action='store_true', help="does not load startup.py on boot")
 parser.add_argument('-b', '--boot', action='store_true', help="Boot SuperCollider from the command line")
+parser.add_argument('--repl', action='store_true', help='Start WebSocket REPL server (requires websockets package)')
+parser.add_argument('--repl-port', type=int, default=REPL_WEBSOCKET_PORT, help='REPL WebSocket port (default: 5555)')
 
 args = parser.parse_args()
 
@@ -62,6 +65,14 @@ if args.no_startup:
 if args.boot:
 
     FoxDotCode.boot_supercollider()
+
+if args.repl:
+
+    # Start WebSocket REPL server in the background, then open the GUI.
+    from .lib.REPL import REPLServer
+    from .lib import execute as _foxdot_execute, Clock
+    _repl_server = REPLServer(_foxdot_execute, Clock, transport="websocket", port=args.repl_port)
+    _repl_server.start()
 
 if args.pipe:
 
