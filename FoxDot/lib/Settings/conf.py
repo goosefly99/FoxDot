@@ -27,6 +27,10 @@ CLOCK_LATENCY=0 # 0=low, 1=medium, 2=high
 FORWARD_ADDRESS=''
 FORWARD_PORT=0
 
+# REPL server settings (lib/REPL/)
+REPL_WEBSOCKET_PORT = 5555
+REPL_STATE_BROADCAST_INTERVAL = 2.0  # seconds between state broadcasts
+
 # Text colours
 # ------------------
 
