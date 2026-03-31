@@ -23,6 +23,7 @@ from .ServerManager import *
 from .SCLang import SynthDefs, Env, SynthDef, CompiledSynthDef
 from .Root import Root
 from .Scale import Scale, Tuning
+from .EventLogger import mark, start_logging, stop_logging
 
 # stdlib imports
 
@@ -234,3 +235,8 @@ PatternTypes = functions(Patterns.Sequences)
 # Start
 
 Clock.start()
+
+# Event logger — conditional on settings
+
+if getattr(Settings, 'EVENT_LOGGER_ENABLED', False):
+    start_logging(output_dir=getattr(Settings, 'EVENT_LOGGER_OUTPUT_DIR', '.'), clock=Clock)

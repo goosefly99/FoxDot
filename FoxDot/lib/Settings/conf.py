@@ -31,6 +31,10 @@ FORWARD_PORT=0
 REPL_WEBSOCKET_PORT = 5555
 REPL_STATE_BROADCAST_INTERVAL = 2.0  # seconds between state broadcasts
 
+# Event logger settings (lib/EventLogger/)
+EVENT_LOGGER_ENABLED = False
+EVENT_LOGGER_OUTPUT_DIR = "~/foxdot-sessions/"
+
 # Text colours
 # ------------------
 
