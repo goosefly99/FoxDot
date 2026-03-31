@@ -35,6 +35,10 @@ REPL_STATE_BROADCAST_INTERVAL = 2.0  # seconds between state broadcasts
 EVENT_LOGGER_ENABLED = False
 EVENT_LOGGER_OUTPUT_DIR = "~/foxdot-sessions/"
 
+# Audacity integration settings (lib/AudacityBridge/)
+AUDACITY_MACRO_NAME = "FoxDot-Master"
+AUDACITY_EXPORT_FORMAT = "WAV"
+
 # Text colours
 # ------------------
 
