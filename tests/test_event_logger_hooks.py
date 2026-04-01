@@ -1,6 +1,6 @@
 """Tests for EventLogger hooks — dynamic method patching and unpatching."""
 import unittest
-from unittest.mock import MagicMock, PropertyMock
+from unittest.mock import MagicMock
 
 from FoxDot.lib.EventLogger import hooks
 

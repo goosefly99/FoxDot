@@ -1,7 +1,7 @@
 """Tests for AudacityBridge bridge module — escape functions, pipe paths, and command formatting."""
 import sys
 import unittest
-from unittest.mock import MagicMock, patch, mock_open
+from unittest.mock import MagicMock, patch
 
 from FoxDot.lib.AudacityBridge.bridge import (
     _escape_path, _get_pipe_paths, _PIPE_PATHS, AudacityBridge,
