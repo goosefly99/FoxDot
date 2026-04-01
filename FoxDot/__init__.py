@@ -17,6 +17,12 @@ the FoxDot classes and how to implement them.
 Copyright Ryan Kirkbride 2015
 """
 
+import os as _os
+
+__version__ = open(
+    _os.path.join(_os.path.dirname(__file__), "lib", ".version")
+).read().strip()
+
 def boot_supercollider():
     """ Uses subprocesses to boot supercollider from the cli """
 

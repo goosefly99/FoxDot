@@ -1,0 +1,77 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "FoxDot"
+dynamic = ["version"]
+description = "Live coding music with SuperCollider"
+readme = "README.md"
+license = {text = "CC-BY-SA-4.0"}
+requires-python = ">=3.13.1"
+authors = [
+    {name = "Ryan Kirkbride", email = "ryan@foxdot.org"},
+]
+keywords = ["live-coding", "music", "supercollider", "algorithmic-composition"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "packaging",
+    "psutil>=7.0",
+]
+
+[project.optional-dependencies]
+simple = ["wxPython>=4.2.2"]
+midi = ["midiutil"]
+audacity = ["PyAudacity"]
+repl = ["websockets>=12.0"]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov",
+    "ruff",
+]
+
+[project.gui-scripts]
+foxdot = "FoxDot:main"
+
+[project.urls]
+Homepage = "http://foxdot.org/"
+
+[tool.setuptools.dynamic]
+version = {file = "FoxDot/lib/.version"}
+
+[tool.setuptools.packages.find]
+include = ["FoxDot*"]
+
+[tool.setuptools.package-data]
+FoxDot = [
+    "osc/*.scd",
+    "osc/sceffects/*.scd",
+    "osc/scsyndef/*.scd",
+    "snd/*/*/*.*",
+    "snd/_loop_/*.wav",
+    "demo/*.py",
+    "rec/.null",
+    "startup.scd",
+    "lib/.version",
+    "lib/Extensions/*/*.*",
+    "lib/Extensions/*/*/*.*",
+    "README.md",
+]
+"FoxDot.lib.Workspace" = ["img/*", "tmp/*"]
+"FoxDot.lib.Settings" = ["conf.txt"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
