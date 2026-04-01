@@ -96,13 +96,12 @@ class REPLServer:
         stdout_val = captured_out.getvalue()
         stderr_val = captured_err.getvalue()
 
-        # FoxDotCode.__call__ catches exceptions internally and returns the
-        # traceback string as its return value.  Detect that pattern.
         if not success:
             return ResultMessage.error_result(msg_id, error_msg, tb_str)
 
-        # If FoxDotCode swallowed an exception it put the traceback in stderr.
-        if stderr_val and not success:
+        # FoxDotCode.__call__ may catch exceptions internally and write the
+        # traceback to stderr instead of re-raising.
+        if stderr_val:
             return ResultMessage.error_result(msg_id, stderr_val.strip(), stderr_val)
 
         players = self._snapshot_players()

@@ -11,6 +11,11 @@ import os
 import time
 
 
+def _sanitize_label(label):
+    """Remove tab and newline characters that would break Audacity label format."""
+    return str(label).replace('\t', ' ').replace('\n', ' ').replace('\r', '')
+
+
 class EventLogger:
 
     def __init__(self, output_dir=".", session_name=None):
@@ -48,11 +53,11 @@ class EventLogger:
     def log_event(self, label):
         """Add a point label at the current time."""
         t = self._elapsed()
-        self.events.append((t, t, label))
+        self.events.append((t, t, _sanitize_label(label)))
 
     def log_region_start(self, key, label):
         """Begin a region label (e.g., player start)."""
-        self.active_players[key] = (self._elapsed(), label)
+        self.active_players[key] = (self._elapsed(), _sanitize_label(label))
 
     def log_region_end(self, key):
         """End a region label (e.g., player stop)."""

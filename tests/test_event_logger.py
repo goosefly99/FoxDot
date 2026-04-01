@@ -146,5 +146,26 @@ class TestEventLogger(unittest.TestCase):
         self.assertTrue(filepath.endswith(".txt"))
 
 
+    def test_label_sanitizes_tabs_and_newlines(self):
+        """Labels with tab or newline chars must not break Audacity format."""
+        self.logger.start()
+        self.logger.log_event("has\ttab")
+        self.logger.log_event("has\nnewline")
+        self.logger.log_region_start("d1", "region\twith\ttabs")
+        self.logger.log_region_end("d1")
+
+        filepath = os.path.join(self.tmpdir, "sanitize_test.txt")
+        self.logger.write_labels(filepath)
+
+        with open(filepath) as f:
+            lines = f.readlines()
+
+        for line in lines:
+            parts = line.strip().split("\t")
+            # Each line should have exactly 3 tab-separated fields
+            self.assertEqual(len(parts), 3,
+                             f"Label broke format: {line!r}")
+
+
 if __name__ == "__main__":
     unittest.main()
