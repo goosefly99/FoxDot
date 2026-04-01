@@ -6,7 +6,10 @@ Uses a wrapper approach that preserves the original methods so hooks
 can be cleanly removed.
 """
 
+import threading
+
 _originals = {}
+_lock = threading.Lock()
 
 
 def hook_clock_bpm(logger, clock):
@@ -78,30 +81,32 @@ def install_hooks(logger, clock):
     Raises RuntimeError if hooks are already installed.  Call
     remove_hooks() first to reinstall.
     """
-    if _originals:
-        raise RuntimeError(
-            "EventLogger hooks are already installed. "
-            "Call remove_hooks() before reinstalling."
-        )
-    hook_clock_bpm(logger, clock)
-    hook_player_rshift(logger)
-    hook_player_stop(logger)
+    with _lock:
+        if _originals:
+            raise RuntimeError(
+                "EventLogger hooks are already installed. "
+                "Call remove_hooks() before reinstalling."
+            )
+        hook_clock_bpm(logger, clock)
+        hook_player_rshift(logger)
+        hook_player_stop(logger)
 
 
 def remove_hooks():
     """Remove all hooks. Restore original methods."""
-    if 'clock_setattr' in _originals:
-        from ..TempoClock import TempoClock
-        TempoClock.__setattr__ = _originals.pop('clock_setattr')
+    with _lock:
+        if 'clock_setattr' in _originals:
+            from ..TempoClock import TempoClock
+            TempoClock.__setattr__ = _originals.pop('clock_setattr')
 
-    if 'player_rshift' in _originals:
-        from ..Players import Player
-        Player.__rshift__ = _originals.pop('player_rshift')
+        if 'player_rshift' in _originals:
+            from ..Players import Player
+            Player.__rshift__ = _originals.pop('player_rshift')
 
-    if 'player_stop' in _originals:
-        from ..Players import Player
-        Player.stop = _originals.pop('player_stop')
+        if 'player_stop' in _originals:
+            from ..Players import Player
+            Player.stop = _originals.pop('player_stop')
 
-    if 'player_pause' in _originals:
-        from ..Players import Player
-        Player.pause = _originals.pop('player_pause')
+        if 'player_pause' in _originals:
+            from ..Players import Player
+            Player.pause = _originals.pop('player_pause')

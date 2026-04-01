@@ -116,14 +116,17 @@ class AudacityBridge:
         self._to_pipe.write(command + '\n')
         self._to_pipe.flush()
 
-        # Read response lines until we get an empty line or timeout
+        # Read response lines until we get an empty line or timeout.
+        # Use rstrip('\r\n') instead of strip() to avoid treating
+        # whitespace-only response lines as end-of-response markers.
+        # Audacity terminates responses with a blank line ('\n').
         lines = []
         deadline = time.time() + _READ_TIMEOUT
         while time.time() < deadline:
-            line = self._from_pipe.readline().strip()
-            if not line:
+            line = self._from_pipe.readline()
+            if not line or line.rstrip('\r\n') == '':
                 break
-            lines.append(line)
+            lines.append(line.rstrip('\r\n'))
 
         return '\n'.join(lines)
 

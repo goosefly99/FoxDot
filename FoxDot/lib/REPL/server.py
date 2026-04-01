@@ -10,9 +10,12 @@ from any thread.
 from __future__ import annotations
 
 import io
+import logging
 import sys
 import threading
 import traceback
+
+logger = logging.getLogger(__name__)
 
 from .protocol import (
     EvalMessage, ResultMessage, StateMessage, ClockState, PlayerState,
@@ -128,6 +131,7 @@ class REPLServer:
             bar = int(beat // meter_num)
             return ClockState(bpm=bpm, beat=round(beat, 3), bar=bar)
         except Exception:
+            logger.debug("Failed to snapshot clock state", exc_info=True)
             return ClockState()
 
     def _snapshot_players(self) -> dict[str, PlayerState]:
@@ -147,14 +151,14 @@ class REPLServer:
                         raw_amp = obj.amp
                         amp = float(raw_amp.now() if hasattr(raw_amp, "now") else raw_amp)
                     except Exception:
-                        pass
+                        logger.debug("Failed to read amp for player %s", name)
                     result[name] = PlayerState(
                         synth=synth_name,
                         active=bool(getattr(obj, "isAlive", True)),
                         amp=amp,
                     )
         except Exception:
-            pass
+            logger.debug("Failed to snapshot players", exc_info=True)
         return result
 
     # ------------------------------------------------------------------

@@ -114,7 +114,7 @@ class WebSocketTransport:
                 response = await self._handle_message(raw)
                 await websocket.send(response)
         except Exception:
-            pass
+            logger.debug("WebSocket client error", exc_info=True)
         finally:
             with self._clients_lock:
                 self._clients.discard(websocket)
@@ -177,6 +177,7 @@ class WebSocketTransport:
             try:
                 await client.send(message)
             except Exception:
+                logger.debug("Failed to send to client, removing")
                 dead.add(client)
         if dead:
             with self._clients_lock:
