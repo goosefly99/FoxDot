@@ -17,6 +17,17 @@ _PIPE_PATHS = {
 _READ_TIMEOUT = 10.0
 
 
+def _escape_path(filepath):
+    """Escape a file path for use in Audacity pipe commands.
+
+    Audacity commands use double-quoted strings.  A path containing a
+    literal double-quote would break the command syntax and could cause
+    unexpected behaviour.  We replace any embedded quotes with their
+    escaped form.
+    """
+    return str(filepath).replace('"', '\\"')
+
+
 def _get_pipe_paths():
     """Return (to_pipe, from_pipe) for the current platform."""
     for key in _PIPE_PATHS:
@@ -49,13 +60,13 @@ class AudacityBridge:
         to_path, from_path = _get_pipe_paths()
 
         try:
-            if sys.platform == 'win32':
-                # On Windows the pipes are opened as regular files
-                self._to_pipe = open(to_path, 'w')
+            self._to_pipe = open(to_path, 'w')
+            try:
                 self._from_pipe = open(from_path, 'r')
-            else:
-                self._to_pipe = open(to_path, 'w')
-                self._from_pipe = open(from_path, 'r')
+            except OSError:
+                self._to_pipe.close()
+                self._to_pipe = None
+                raise
             return
         except OSError:
             pass
@@ -142,7 +153,7 @@ class AudacityBridge:
         Args:
             filepath: Absolute path to an Audacity-format label file.
         """
-        return self._send('Import2: Filename="{}"'.format(filepath))
+        return self._send('Import2: Filename="{}"'.format(_escape_path(filepath)))
 
     def export_labels(self, filepath):
         """Export current labels to a .txt file.
@@ -150,7 +161,7 @@ class AudacityBridge:
         Args:
             filepath: Destination path for the exported label file.
         """
-        return self._send('ExportLabels: Filename="{}"'.format(filepath))
+        return self._send('ExportLabels: Filename="{}"'.format(_escape_path(filepath)))
 
     # ------------------------------------------------------------------
     # Macro Operations
@@ -162,7 +173,8 @@ class AudacityBridge:
         Args:
             macro_name: Name of an installed Audacity macro (e.g. "FoxDot-Master").
         """
-        return self._send('ApplyMacrosPalette: MacroName="{}"'.format(macro_name))
+        return self._send('ApplyMacrosPalette: MacroName="{}"'.format(
+            str(macro_name).replace('"', '\\"')))
 
     def apply_foxdot_master(self):
         """Run the FoxDot-Master mastering macro."""
@@ -185,7 +197,7 @@ class AudacityBridge:
         ext = ext_map.get(format.upper(), '.wav')
         if not filepath.lower().endswith(ext):
             filepath = filepath + ext
-        return self._send('Export2: Filename="{}" NumChannels=2'.format(filepath))
+        return self._send('Export2: Filename="{}" NumChannels=2'.format(_escape_path(filepath)))
 
     def save_project(self, filepath):
         """Save the current Audacity project (.aup3).
@@ -193,7 +205,7 @@ class AudacityBridge:
         Args:
             filepath: Destination path for the project file.
         """
-        return self._send('SaveProject2: Filename="{}"'.format(filepath))
+        return self._send('SaveProject2: Filename="{}"'.format(_escape_path(filepath)))
 
     def open_file(self, filepath):
         """Open an audio file in Audacity.
@@ -201,4 +213,4 @@ class AudacityBridge:
         Args:
             filepath: Path to the audio file to open.
         """
-        return self._send('Import2: Filename="{}"'.format(filepath))
+        return self._send('Import2: Filename="{}"'.format(_escape_path(filepath)))

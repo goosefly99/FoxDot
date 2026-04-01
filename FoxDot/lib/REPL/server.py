@@ -13,11 +13,10 @@ import io
 import sys
 import threading
 import traceback
-import queue
 
 from .protocol import (
     EvalMessage, ResultMessage, StateMessage, ClockState, PlayerState,
-    parse_message, ProtocolErrorMessage,
+    parse_message,
 )
 
 
