@@ -80,10 +80,18 @@ class WebSocketTransport:
         logger.info("FoxDot REPL WebSocket server started on ws://localhost:%d", self._port)
 
     def stop(self):
-        """Signal the server to stop."""
+        """Signal the server to stop and wait for threads to terminate."""
         self._stopped = True
         if self._loop is not None and self._ws_server is not None:
-            self._loop.call_soon_threadsafe(self._ws_server.close)
+            try:
+                self._loop.call_soon_threadsafe(self._ws_server.close)
+            except RuntimeError:
+                # Event loop already closed
+                pass
+        if self._broadcast_thread is not None:
+            self._broadcast_thread.join(timeout=5)
+        if self._thread is not None:
+            self._thread.join(timeout=5)
 
     # ------------------------------------------------------------------
     # Async internals
@@ -127,7 +135,7 @@ class WebSocketTransport:
 
         # evaluate() is synchronous and holds self._server._lock, so run it
         # in the default executor to avoid blocking the event loop.
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         result = await loop.run_in_executor(
             None, self._server.evaluate, eval_msg.code, eval_msg.id
         )

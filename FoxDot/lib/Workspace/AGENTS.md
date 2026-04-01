@@ -17,6 +17,7 @@ The Tkinter-based GUI editor for FoxDot. **This module is slated for replacement
 | `LineNumbers.py` | Line number display | Gutter line numbers |
 | `Prompt.py` (5KB) | Dialog prompts | User input dialogs |
 | `AppFunctions.py` (2KB) | GUI callback utilities | Helper functions for editor actions |
+| `ConfigFile.py` | Configuration file handling | User preference storage and retrieval |
 | `tkimport.py` | Tkinter version abstraction | Handles `tkinter` (Py3) vs `Tkinter` (Py2) |
 | `Simple/` | wxPython alternative editor | `SimpleEditor`, `SimpleMenu`, `SimpleText` |
 | `img/` | GUI icons and images | FoxDot icon resources |

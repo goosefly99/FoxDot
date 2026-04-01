@@ -12,6 +12,7 @@ Handles code compilation, execution, and live-reloadable function scheduling. Th
 | `foxdot_live_function.py` | `@livefunction` decorator | `livefunction` — functions that can be redefined during performance |
 | `foxdot_when_statement.py` | `@when` decorator | `when` — conditional scheduling (execute code when condition is true) |
 | `foxdot_tokenize.py` | Custom tokenizer | Tokenization support for FoxDot syntax |
+| `foxdot_func_cmp.py` | Function comparison | Utility for comparing function objects |
 
 ## FoxDotCode — Execution Engine
 

@@ -91,15 +91,16 @@ class AudacityBridge:
         return self._to_pipe is not None and self._from_pipe is not None
 
     def close(self):
-        """Close pipe handles."""
-        for f in (self._to_pipe, self._from_pipe):
+        """Close pipe handles.  Always attempts both even if the first fails."""
+        for attr in ('_to_pipe', '_from_pipe'):
+            f = getattr(self, attr, None)
             if f is not None:
                 try:
                     f.close()
                 except OSError:
                     pass
-        self._to_pipe = None
-        self._from_pipe = None
+                finally:
+                    setattr(self, attr, None)
 
     # ------------------------------------------------------------------
     # Low-level pipe communication

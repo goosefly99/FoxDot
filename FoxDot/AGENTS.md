@@ -17,7 +17,7 @@ This is the top-level Python package for FoxDot, an algorithmic music production
 ### Entry Points
 
 - `__init__.py` — Library entry point. Contains `boot_supercollider()` for launching SC via subprocess, and `main()` which starts the Tkinter GUI workspace. Also exposes `Go()` for keeping the Clock thread alive in headless/script mode.
-- `__main__.py` — CLI entry point with argparse. Flags: `--pipe` (headless REPL), `--dir` (working directory), `--startup` (custom startup file), `--simple` (wxPython GUI), `--boot` (auto-start SC), `--no-startup`.
+- `__main__.py` — CLI entry point with argparse. Flags: `--pipe` (headless REPL), `--dir` (working directory), `--startup` (custom startup file), `--simple` (wxPython GUI), `--boot` (auto-start SC), `--no-startup`, `--repl` (start WebSocket REPL server), `--repl-port` (REPL WebSocket port, default 5555), `--post-process` (post-processing with Audacity), `--labels` (label file for post-processing), `--output` (output path), `--format` (WAV/MP3/OGG/FLAC), `--no-master` (skip mastering macro).
 
 ### Key Global State
 

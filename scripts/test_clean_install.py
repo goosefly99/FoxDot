@@ -18,7 +18,7 @@ def test_clean_install():
         venv_dir = os.path.join(tmpdir, "venv")
 
         print(f"Creating venv in {venv_dir} ...")
-        subprocess.run([sys.executable, "-m", "venv", venv_dir], check=True)
+        subprocess.run([sys.executable, "-m", "venv", venv_dir], check=True, timeout=60)
 
         if sys.platform == "win32":
             pip = os.path.join(venv_dir, "Scripts", "pip")
@@ -28,7 +28,7 @@ def test_clean_install():
             python = os.path.join(venv_dir, "bin", "python")
 
         print("Installing FoxDot from source ...")
-        subprocess.run([pip, "install", project_root], check=True)
+        subprocess.run([pip, "install", project_root], check=True, timeout=120)
 
         checks = [
             "from FoxDot.lib.Patterns import Pattern; print('Patterns OK')",
@@ -42,6 +42,7 @@ def test_clean_install():
                 [python, "-c", check],
                 capture_output=True,
                 text=True,
+                timeout=30,
             )
             if result.returncode != 0:
                 print(f"FAIL: {check}")
