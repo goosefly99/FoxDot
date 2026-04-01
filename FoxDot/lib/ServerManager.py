@@ -78,7 +78,7 @@ class BidirectionalOSCServer(OSCServer):
         if self._server_thread is not None:
             return
         self._server_thread = threading.Thread(target=self.serve_forever)
-        self._server_thread.setDaemon(True)
+        self._server_thread.daemon = True
         self._server_thread.start()
 
     def stop(self):

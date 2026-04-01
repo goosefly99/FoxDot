@@ -16,7 +16,7 @@ class TestSampleSearch(unittest.TestCase):
         def mkdir(dirname):
             os.mkdir(join(self.wd, dirname))
         def touch(filename):
-            fullpath = join(self.wd, filename)
+            fullpath = os.path.normpath(join(self.wd, filename))
             open(fullpath, 'w').close()
             return fullpath
         self.wd = tempfile.mkdtemp()

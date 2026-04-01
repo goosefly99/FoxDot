@@ -349,7 +349,7 @@ class BufferManager(object):
 
         candidates = []
         queue = self._paths[:]
-        subpaths = filename.split(os.sep)
+        subpaths = filename.replace(os.sep, '/').split('/')
         filepat = subpaths.pop()
         while subpaths:
             subpath = subpaths.pop(0)

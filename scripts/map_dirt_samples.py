@@ -207,17 +207,6 @@ def find_foxdot_snd() -> Path:
     return candidates[0]
 
 
-def get_target_dir(snd_root: Path, char: str, case: str) -> Path:
-    """Return the target directory for a given character and case."""
-    from .Buffers import nonalpha  # noqa: avoid circular — we inline the logic
-
-    if char.isalpha():
-        return snd_root / char.lower() / case
-    else:
-        # Non-alpha characters use named subdirectories under _/
-        return snd_root / "_" / case
-
-
 def resolve_target_dir(snd_root: Path, char: str, case: str) -> Path:
     """Return the snd/ subdirectory for a mapping entry."""
     if char.isalpha():
