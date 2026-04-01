@@ -21,6 +21,7 @@ Example session::
 from __future__ import annotations
 
 import sys
+import threading
 
 
 class StdinTransport:
@@ -28,11 +29,11 @@ class StdinTransport:
 
     def __init__(self, server):
         self._server = server
-        self._stopped = False
+        self._stop_event = threading.Event()
 
     def start(self):
         """Read code blocks from stdin and write results to stdout.  Blocks."""
-        while not self._stopped:
+        while not self._stop_event.is_set():
             try:
                 code = self._read_block()
             except EOFError:
@@ -48,7 +49,7 @@ class StdinTransport:
             sys.stdout.flush()
 
     def stop(self):
-        self._stopped = True
+        self._stop_event.set()
 
     # ------------------------------------------------------------------
     # Internal

@@ -60,9 +60,9 @@ class AudacityBridge:
         to_path, from_path = _get_pipe_paths()
 
         try:
-            self._to_pipe = open(to_path, 'w')
+            self._to_pipe = open(to_path, 'w', encoding='utf-8')
             try:
-                self._from_pipe = open(from_path, 'r')
+                self._from_pipe = open(from_path, 'r', encoding='utf-8')
             except OSError:
                 self._to_pipe.close()
                 self._to_pipe = None

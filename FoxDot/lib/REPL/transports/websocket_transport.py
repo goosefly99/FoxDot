@@ -51,7 +51,7 @@ class WebSocketTransport:
         self._clients_lock = threading.Lock()
         self._thread: threading.Thread | None = None
         self._broadcast_thread: threading.Thread | None = None
-        self._stopped = False
+        self._stop_event = threading.Event()
 
     # ------------------------------------------------------------------
     # Public
@@ -81,7 +81,7 @@ class WebSocketTransport:
 
     def stop(self):
         """Signal the server to stop and wait for threads to terminate."""
-        self._stopped = True
+        self._stop_event.set()
         if self._loop is not None and self._ws_server is not None:
             try:
                 self._loop.call_soon_threadsafe(self._ws_server.close)
@@ -154,7 +154,7 @@ class WebSocketTransport:
         except Exception:
             interval = 2.0
 
-        while not self._stopped:
+        while not self._stop_event.is_set():
             time.sleep(interval)
             with self._clients_lock:
                 has_clients = bool(self._clients)

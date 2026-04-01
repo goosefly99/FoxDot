@@ -6,7 +6,7 @@ from FoxDot.lib.REPL.protocol import (
     EvalMessage, ResultMessage, StateMessage, ProtocolErrorMessage,
     ClockState, PlayerState,
     MSG_EVAL, MSG_RESULT, MSG_STATE, MSG_ERROR,
-    parse_message, read_stdin_block,
+    parse_message,
 )
 
 
@@ -144,17 +144,6 @@ class TestParseMessage(unittest.TestCase):
         raw = json.dumps({"code": "print(1)"})
         with self.assertRaises(ValueError):
             parse_message(raw)
-
-
-class TestReadStdinBlock(unittest.TestCase):
-
-    def test_joins_lines(self):
-        lines = ["d1 >> pluck()", "d2 >> bass()"]
-        result = read_stdin_block(lines)
-        self.assertEqual(result, "d1 >> pluck()\nd2 >> bass()")
-
-    def test_empty_list(self):
-        self.assertEqual(read_stdin_block([]), "")
 
 
 if __name__ == "__main__":

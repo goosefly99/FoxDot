@@ -40,7 +40,7 @@ class REPLServer:
         self._transport_name = transport
         self._transport = None
         self._lock = threading.Lock()
-        self._stopped = False
+        self._stop_event = threading.Event()
 
     # ------------------------------------------------------------------
     # Public API
@@ -64,7 +64,7 @@ class REPLServer:
 
     def stop(self):
         """Gracefully shut down the server."""
-        self._stopped = True
+        self._stop_event.set()
         if self._transport is not None:
             self._transport.stop()
 

@@ -226,12 +226,3 @@ def parse_message(raw: str) -> EvalMessage:
     return EvalMessage.from_dict(d)
 
 
-# ---------------------------------------------------------------------------
-# stdin transport helpers
-# ---------------------------------------------------------------------------
-
-STDIN_DELIMITER = ""  # blank line separates messages in stdin mode
-
-def read_stdin_block(lines: list[str]) -> str:
-    """Join a list of lines (a single stdin message block) into a code string."""
-    return "\n".join(lines)

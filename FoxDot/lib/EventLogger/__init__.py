@@ -53,9 +53,11 @@ def stop_logging():
     with _lock:
         if _global_logger is None:
             return None
-        filepath = _global_logger.stop()
-        remove_hooks()
-        _global_logger = None
+        try:
+            filepath = _global_logger.stop()
+        finally:
+            remove_hooks()
+            _global_logger = None
     return filepath
 
 

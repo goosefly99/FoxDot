@@ -126,7 +126,7 @@ class TestREPLServerTransport(unittest.TestCase):
     def test_stop_sets_flag(self):
         server = REPLServer(self.code, self.clock)
         server.stop()
-        self.assertTrue(server._stopped)
+        self.assertTrue(server._stop_event.is_set())
 
     def test_stop_calls_transport_stop(self):
         server = REPLServer(self.code, self.clock)
