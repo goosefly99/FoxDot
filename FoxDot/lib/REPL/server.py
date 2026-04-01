@@ -85,8 +85,8 @@ class REPLServer:
                 error_msg = ""
                 tb_str = ""
                 success = True
-            except Exception:
-                error_msg = str(sys.exc_info()[1])
+            except Exception as exc:
+                error_msg = str(exc)
                 tb_str = traceback.format_exc()
                 success = False
             finally:

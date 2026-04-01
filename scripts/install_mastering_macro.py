@@ -18,37 +18,11 @@ import argparse
 import os
 import sys
 
-MACRO_NAME = "FoxDot-Master"
-
-MACRO_CONTENTS = """\
-Normalize:PeakLevel=-1.0
-Compressor:Threshold=-18.0 NoiseFloor=-40.0 Ratio=4.0 AttackTime=0.2 ReleaseTime=1.0
-Limiter:type="HardLimit" gainL=0.0 gainR=0.0 thresh=-3.0 hold=10
-FilterCurve:f0=30 v0=-24 f1=80 v1=0 f2=16000 v2=0 f3=20000 v3=-6
-"""
-
-
-def get_macro_dir():
-    """Return the platform-specific Audacity Macros directory."""
-    if sys.platform == "win32":
-        appdata = os.environ.get("APPDATA", "")
-        if not appdata:
-            raise RuntimeError("APPDATA environment variable not set")
-        return os.path.join(appdata, "audacity", "Macros")
-    elif sys.platform == "darwin":
-        return os.path.expanduser(
-            "~/Library/Application Support/audacity/Macros"
-        )
-    else:
-        # Linux — check XDG first, fall back to legacy paths
-        config_home = os.environ.get(
-            "XDG_CONFIG_HOME", os.path.expanduser("~/.config")
-        )
-        xdg_path = os.path.join(config_home, "audacity", "Macros")
-        legacy_path = os.path.expanduser("~/.audacity-data/Macros")
-        if os.path.isdir(legacy_path):
-            return legacy_path
-        return xdg_path
+# Import shared constants from the library module to avoid duplication.
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'FoxDot'))
+from FoxDot.lib.AudacityBridge.macros import (
+    MACRO_NAME, MACRO_CONTENTS, get_macro_dir,
+)
 
 
 def install_macro(dry_run=False):

@@ -49,6 +49,7 @@ class WebSocketTransport:
         self._loop: asyncio.AbstractEventLoop | None = None
         self._ws_server = None
         self._clients: set = set()
+        self._clients_lock = threading.Lock()
         self._thread: threading.Thread | None = None
         self._broadcast_thread: threading.Thread | None = None
         self._stopped = False
@@ -106,7 +107,8 @@ class WebSocketTransport:
 
     async def _handle_client(self, websocket):
         """Handle one WebSocket connection for its lifetime."""
-        self._clients.add(websocket)
+        with self._clients_lock:
+            self._clients.add(websocket)
         try:
             async for raw in websocket:
                 response = await self._handle_message(raw)
@@ -114,7 +116,8 @@ class WebSocketTransport:
         except Exception:
             pass
         finally:
-            self._clients.discard(websocket)
+            with self._clients_lock:
+                self._clients.discard(websocket)
 
     async def _handle_message(self, raw: str) -> str:
         from ..protocol import parse_message, ProtocolErrorMessage
@@ -146,7 +149,9 @@ class WebSocketTransport:
 
         while not self._stopped:
             time.sleep(interval)
-            if not self._clients:
+            with self._clients_lock:
+                has_clients = bool(self._clients)
+            if not has_clients:
                 continue
             try:
                 state_msg = self._server.get_state().to_json()
@@ -156,7 +161,9 @@ class WebSocketTransport:
 
     def _broadcast_sync(self, message: str):
         """Send *message* to all connected clients from a non-async context."""
-        if self._loop is None or not self._clients:
+        with self._clients_lock:
+            has_clients = bool(self._clients)
+        if self._loop is None or not has_clients:
             return
         asyncio.run_coroutine_threadsafe(
             self._broadcast_async(message), self._loop
@@ -164,9 +171,13 @@ class WebSocketTransport:
 
     async def _broadcast_async(self, message: str):
         dead = set()
-        for client in list(self._clients):
+        with self._clients_lock:
+            snapshot = list(self._clients)
+        for client in snapshot:
             try:
                 await client.send(message)
             except Exception:
                 dead.add(client)
-        self._clients -= dead
+        if dead:
+            with self._clients_lock:
+                self._clients -= dead

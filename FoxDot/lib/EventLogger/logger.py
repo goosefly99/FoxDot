@@ -7,8 +7,11 @@ Audacity label format (tab-delimited):
   Region label:  15.300000\t45.800000\td1: pluck section
 """
 
+import logging
 import os
 import time
+
+_logger = logging.getLogger(__name__)
 
 
 def _sanitize_label(label):
@@ -66,16 +69,33 @@ class EventLogger:
             self.events.append((start, self._elapsed(), label))
 
     def write_labels(self, filepath):
-        """Write all events to Audacity label format."""
+        """Write all events to Audacity label format.
+
+        Raises OSError if the file cannot be written.
+        """
         sorted_events = sorted(self.events, key=lambda e: e[0])
-        with open(filepath, 'w') as f:
-            for start, end, label in sorted_events:
-                f.write("{:.6f}\t{:.6f}\t{}\n".format(start, end, label))
+        try:
+            with open(filepath, 'w') as f:
+                for start, end, label in sorted_events:
+                    f.write("{:.6f}\t{:.6f}\t{}\n".format(start, end, label))
+        except OSError:
+            _logger.error("Failed to write labels to %s", filepath)
+            raise
 
     def export(self):
-        """Write labels to output_dir and return the filepath."""
-        os.makedirs(self.output_dir, exist_ok=True)
+        """Write labels to output_dir and return the filepath.
+
+        Returns None if the file could not be written.
+        """
+        try:
+            os.makedirs(self.output_dir, exist_ok=True)
+        except OSError:
+            _logger.error("Failed to create output directory %s", self.output_dir)
+            return None
         filename = "foxdot_labels_{}.txt".format(self.session_name)
         filepath = os.path.join(self.output_dir, filename)
-        self.write_labels(filepath)
+        try:
+            self.write_labels(filepath)
+        except OSError:
+            return None
         return filepath

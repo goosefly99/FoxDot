@@ -73,7 +73,16 @@ def hook_player_stop(logger):
 
 
 def install_hooks(logger, clock):
-    """Install all hooks. Call once at startup."""
+    """Install all hooks. Call once at startup.
+
+    Raises RuntimeError if hooks are already installed.  Call
+    remove_hooks() first to reinstall.
+    """
+    if _originals:
+        raise RuntimeError(
+            "EventLogger hooks are already installed. "
+            "Call remove_hooks() before reinstalling."
+        )
     hook_clock_bpm(logger, clock)
     hook_player_rshift(logger)
     hook_player_stop(logger)

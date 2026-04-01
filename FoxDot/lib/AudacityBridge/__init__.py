@@ -20,9 +20,15 @@ _global_bridge = None
 def connect():
     """Connect to a running Audacity instance and return the bridge.
 
+    Closes any existing connection before creating a new one.
     Raises ConnectionError if Audacity is not reachable.
     """
     global _global_bridge
+    if _global_bridge is not None:
+        try:
+            _global_bridge.close()
+        except Exception:
+            pass
     _global_bridge = AudacityBridge()
     return _global_bridge
 
