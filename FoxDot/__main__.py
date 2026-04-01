@@ -29,6 +29,13 @@ parser.add_argument('-n', '--no-startup', action='store_true', help="does not lo
 parser.add_argument('-b', '--boot', action='store_true', help="Boot SuperCollider from the command line")
 parser.add_argument('--repl', action='store_true', help='Start WebSocket REPL server (requires websockets package)')
 parser.add_argument('--repl-port', type=int, default=REPL_WEBSOCKET_PORT, help='REPL WebSocket port (default: 5555)')
+parser.add_argument('--post-process', metavar='RECORDING',
+                    help='Run post-session processing on a recording (requires Audacity)')
+parser.add_argument('--labels', help='Label file for post-processing (auto-discovered if omitted)')
+parser.add_argument('--output', help='Output path for post-processed file')
+parser.add_argument('--format', choices=['WAV', 'MP3', 'OGG', 'FLAC'], default='WAV',
+                    help='Export format for post-processing (default: WAV)')
+parser.add_argument('--no-master', action='store_true', help='Skip mastering macro during post-processing')
 
 args = parser.parse_args()
 
@@ -65,6 +72,22 @@ if args.no_startup:
 if args.boot:
 
     FoxDotCode.boot_supercollider()
+
+if args.post_process:
+
+    # Run post-session processing and exit — no GUI or REPL needed.
+    import sys, os, subprocess
+    _scripts_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'scripts')
+    _post_cmd = [sys.executable, os.path.join(_scripts_dir, 'post_session.py'), args.post_process]
+    if args.labels:
+        _post_cmd += ['--labels', args.labels]
+    if args.output:
+        _post_cmd += ['--output', args.output]
+    if args.format:
+        _post_cmd += ['--format', args.format]
+    if args.no_master:
+        _post_cmd.append('--no-master')
+    sys.exit(subprocess.call(_post_cmd))
 
 if args.repl:
 
