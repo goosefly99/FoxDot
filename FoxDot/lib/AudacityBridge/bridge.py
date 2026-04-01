@@ -63,7 +63,7 @@ class AudacityBridge:
             self._to_pipe = open(to_path, 'w', encoding='utf-8')
             try:
                 self._from_pipe = open(from_path, 'r', encoding='utf-8')
-            except OSError:
+            except BaseException:
                 self._to_pipe.close()
                 self._to_pipe = None
                 raise
@@ -178,7 +178,7 @@ class AudacityBridge:
             macro_name: Name of an installed Audacity macro (e.g. "FoxDot-Master").
         """
         return self._send('ApplyMacrosPalette: MacroName="{}"'.format(
-            str(macro_name).replace('"', '\\"')))
+            _escape_path(macro_name)))
 
     def apply_foxdot_master(self):
         """Run the FoxDot-Master mastering macro."""

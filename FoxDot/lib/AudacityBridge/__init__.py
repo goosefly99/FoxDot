@@ -11,10 +11,13 @@ Usage:
     bridge.export_audio("mastered.wav")
 """
 
+import threading
+
 from .bridge import AudacityBridge
 from .macros import is_macro_installed, install_macro
 
 _global_bridge = None
+_lock = threading.Lock()
 
 
 def connect():
@@ -24,20 +27,23 @@ def connect():
     Raises ConnectionError if Audacity is not reachable.
     """
     global _global_bridge
-    if _global_bridge is not None:
-        try:
-            _global_bridge.close()
-        except Exception:
-            pass
-    _global_bridge = AudacityBridge()
-    return _global_bridge
+    with _lock:
+        if _global_bridge is not None:
+            try:
+                _global_bridge.close()
+            except Exception:
+                pass
+        _global_bridge = AudacityBridge()
+        return _global_bridge
 
 
 def is_connected():
     """Return True if we have an active Audacity connection."""
-    return _global_bridge is not None and _global_bridge.is_connected()
+    with _lock:
+        return _global_bridge is not None and _global_bridge.is_connected()
 
 
 def get_bridge():
     """Return the current bridge instance, or None."""
-    return _global_bridge
+    with _lock:
+        return _global_bridge

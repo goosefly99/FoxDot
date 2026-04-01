@@ -80,6 +80,9 @@ def install_hooks(logger, clock):
 
     Raises RuntimeError if hooks are already installed.  Call
     remove_hooks() first to reinstall.
+
+    The lock is held for the entire operation so that class
+    modifications and ``_originals`` bookkeeping stay in sync.
     """
     with _lock:
         if _originals:
@@ -87,6 +90,8 @@ def install_hooks(logger, clock):
                 "EventLogger hooks are already installed. "
                 "Call remove_hooks() before reinstalling."
             )
+        # All hook functions mutate _originals and patch classes.
+        # Keep them inside the lock to prevent races with remove_hooks().
         hook_clock_bpm(logger, clock)
         hook_player_rshift(logger)
         hook_player_stop(logger)
