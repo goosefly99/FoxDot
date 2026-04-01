@@ -15,7 +15,6 @@ FoxDot thread.  A second timer thread handles state broadcasts.
 from __future__ import annotations
 
 import asyncio
-import json
 import logging
 import threading
 import time
