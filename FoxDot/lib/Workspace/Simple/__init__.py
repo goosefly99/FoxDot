@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 
 # Check wx import - os.system("pip import wxpython and quit?")
 

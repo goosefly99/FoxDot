@@ -979,8 +979,8 @@ class TempoClient:
         # connect to the server and listen for new updates for the tempo-clock
 
         self.listening = True
-        self.daemon = Thread(target=self.listen)
-        self.daemon.start()
+        self._listen_thread = Thread(target=self.listen, daemon=True)
+        self._listen_thread.start()
 
         # Send init message
         self.start_time = None

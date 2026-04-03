@@ -1,4 +1,3 @@
-from __future__ import absolute_import, division, print_function
 
 from .Code import WarningMsg
 from .Patterns import Pattern, Cycle, asStream

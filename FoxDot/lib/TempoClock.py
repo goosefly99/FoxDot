@@ -46,8 +46,6 @@
 
 """
 
-from __future__ import absolute_import, division, print_function
-
 from types import FunctionType, MethodType
 
 from .Players import Player
@@ -634,9 +632,12 @@ class TempoClock(object):
 
         return
 
-    def schedule(self, obj, beat=None, args=(), kwargs={}, is_priority=False):
+    def schedule(self, obj, beat=None, args=(), kwargs=None, is_priority=False):
         """ TempoClock.schedule(callable, beat=None)
             Add a player / event to the queue """
+
+        if kwargs is None:
+            kwargs = {}
 
         # Make sure the object can actually be called
 
@@ -678,7 +679,7 @@ class TempoClock(object):
 
         return
 
-    def future(self, dur, obj, args=(), kwargs={}):
+    def future(self, dur, obj, args=(), kwargs=None):
         """ Add a player / event to the queue `dur` beats in the future """
         self.schedule(obj, self.now() + dur, args, kwargs)
         return
@@ -696,8 +697,8 @@ class TempoClock(object):
         """ Returns a 'schedulable' wrapper for any callable object """
         return Wrapper(self, obj, dur, args)
 
-    def players(self, ex=[]):
-        return [p for p in self.playing if p not in exclude]
+    def players(self, ex=()):
+        return [p for p in self.playing if p not in ex]
 
     # Every n beats, do...
 
@@ -905,8 +906,11 @@ class QueueBlock(object):
     def __repr__(self):
         return "{}: {}".format(self.beat, self.players())
     
-    def add(self, obj, args=(), kwargs={}, is_priority=False):
+    def add(self, obj, args=(), kwargs=None, is_priority=False):
         """ Adds a callable object to the QueueBlock """
+
+        if kwargs is None:
+            kwargs = {}
 
         q_obj = QueueObj(obj, args, kwargs)
 
