@@ -9,6 +9,7 @@ Audacity label format (tab-delimited):
 
 import logging
 import os
+import threading
 import time
 
 _logger = logging.getLogger(__name__)
@@ -27,14 +28,16 @@ class EventLogger:
         self.events = []            # List of (start, end, label) tuples
         self.start_time = None      # Set when logging begins (time.time())
         self.active_players = {}    # Track player start times for regions
+        self._lock = threading.Lock()  # Protects events and active_players
 
     def start(self):
         """Begin a logging session. Records the reference start time."""
-        self.start_time = time.time()
-        self.events = []
-        self.active_players = {}
-        if self.session_name is None:
-            self.session_name = time.strftime("%Y%m%d_%H%M%S")
+        with self._lock:
+            self.start_time = time.time()
+            self.events = []
+            self.active_players = {}
+            if self.session_name is None:
+                self.session_name = time.strftime("%Y%m%d_%H%M%S")
         self.log_event("SESSION START")
 
     def stop(self):
@@ -42,7 +45,9 @@ class EventLogger:
         if self.start_time is None:
             return None
         # Close all open player regions
-        for key in list(self.active_players.keys()):
+        with self._lock:
+            open_keys = list(self.active_players.keys())
+        for key in open_keys:
             self.log_region_end(key)
         self.log_event("SESSION END")
         return self.export()
@@ -56,24 +61,28 @@ class EventLogger:
     def log_event(self, label):
         """Add a point label at the current time."""
         t = self._elapsed()
-        self.events.append((t, t, _sanitize_label(label)))
+        with self._lock:
+            self.events.append((t, t, _sanitize_label(label)))
 
     def log_region_start(self, key, label):
         """Begin a region label (e.g., player start)."""
-        self.active_players[key] = (self._elapsed(), _sanitize_label(label))
+        with self._lock:
+            self.active_players[key] = (self._elapsed(), _sanitize_label(label))
 
     def log_region_end(self, key):
         """End a region label (e.g., player stop)."""
-        if key in self.active_players:
-            start, label = self.active_players.pop(key)
-            self.events.append((start, self._elapsed(), label))
+        with self._lock:
+            if key in self.active_players:
+                start, label = self.active_players.pop(key)
+                self.events.append((start, self._elapsed(), label))
 
     def write_labels(self, filepath):
         """Write all events to Audacity label format.
 
         Raises OSError if the file cannot be written.
         """
-        sorted_events = sorted(self.events, key=lambda e: e[0])
+        with self._lock:
+            sorted_events = sorted(self.events, key=lambda e: e[0])
         try:
             with open(filepath, 'w') as f:
                 for start, end, label in sorted_events:

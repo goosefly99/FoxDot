@@ -194,21 +194,18 @@ class TestInstallAndRemoveHooks(unittest.TestCase):
             hooks.install_hooks(MagicMock(), FakeClock())
 
     def test_remove_hooks_clears_originals(self):
-        # Pre-populate _originals as if hooks were installed
-        hooks._originals['clock_setattr'] = object.__setattr__
+        # Pre-populate _originals as if hooks were installed.
+        # clock_setattr stores (cls, original) tuple since remove_hooks
+        # restores on the stored class rather than importing TempoClock.
+        class FakeTempoClock:
+            pass
+
+        hooks._originals['clock_setattr'] = (FakeTempoClock, object.__setattr__)
         hooks._originals['player_rshift'] = FakePlayer.__rshift__
         hooks._originals['player_stop'] = FakePlayer.stop
         hooks._originals['player_pause'] = FakePlayer.pause
 
-        # Use a real class for TempoClock so __setattr__ can be set
-        class FakeTempoClock:
-            pass
-
-        fake_tc_module = MagicMock()
-        fake_tc_module.TempoClock = FakeTempoClock
-
         with unittest.mock.patch.dict("sys.modules", {
-            "FoxDot.lib.TempoClock": fake_tc_module,
             "FoxDot.lib.Players": MagicMock(Player=FakePlayer),
         }):
             hooks.remove_hooks()

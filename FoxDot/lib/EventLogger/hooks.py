@@ -16,7 +16,7 @@ def hook_clock_bpm(logger, clock):
     """Wrap Clock.__setattr__ to log tempo changes when bpm is set."""
     cls = type(clock)
     original = cls.__setattr__
-    _originals['clock_setattr'] = original
+    _originals['clock_setattr'] = (cls, original)
 
     def logged_setattr(self, attr, value):
         original(self, attr, value)
@@ -101,8 +101,8 @@ def remove_hooks():
     """Remove all hooks. Restore original methods."""
     with _lock:
         if 'clock_setattr' in _originals:
-            from ..TempoClock import TempoClock
-            TempoClock.__setattr__ = _originals.pop('clock_setattr')
+            cls, original = _originals.pop('clock_setattr')
+            cls.__setattr__ = original
 
         if 'player_rshift' in _originals:
             from ..Players import Player

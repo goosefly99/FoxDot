@@ -182,8 +182,8 @@ MAPPING = {
     # '!' = "exclamation"
     ("!", "exclamation"): "blip",    # blip sounds
 
-    # '*' = "asterix"
-    ("*", "asterix"): "sid",        # SID chip sounds
+    # '*' = "asterisk"
+    ("*", "asterisk"): "sid",        # SID chip sounds
 
     # '@' = "at"
     ("@", "at"): "arpy",            # arpy sounds

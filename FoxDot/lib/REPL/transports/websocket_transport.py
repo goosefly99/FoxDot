@@ -104,6 +104,7 @@ class WebSocketTransport:
             self._loop.run_until_complete(self._serve())
         finally:
             self._loop.close()
+            self._loop = None
 
     async def _serve(self):
         async with websockets.server.serve(
@@ -170,7 +171,7 @@ class WebSocketTransport:
         """Send *message* to all connected clients from a non-async context."""
         with self._clients_lock:
             has_clients = bool(self._clients)
-        if self._loop is None or not has_clients:
+        if self._loop is None or self._loop.is_closed() or not has_clients:
             return
         asyncio.run_coroutine_threadsafe(
             self._broadcast_async(message), self._loop

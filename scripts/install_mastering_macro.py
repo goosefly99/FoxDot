@@ -18,8 +18,12 @@ import argparse
 import os
 import sys
 
-# Import shared constants from the library module to avoid duplication.
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'FoxDot'))
+# Ensure the FoxDot package is importable when running from the scripts/ dir
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+_PROJECT_ROOT = os.path.dirname(_SCRIPT_DIR)
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
+
 from FoxDot.lib.AudacityBridge.macros import (
     MACRO_NAME, MACRO_CONTENTS, get_macro_dir,
 )

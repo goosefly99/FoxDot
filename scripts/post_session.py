@@ -128,38 +128,41 @@ def main():
         print("Error: {}".format(e), file=sys.stderr)
         sys.exit(1)
 
-    # --- Open recording ---
-    print("Opening recording: {}".format(recording))
-    bridge.open_file(recording)
+    try:
+        # --- Open recording ---
+        print("Opening recording: {}".format(recording))
+        bridge.open_file(recording)
 
-    # --- Import labels ---
-    if labels:
-        print("Importing labels: {}".format(labels))
-        bridge.import_labels(labels)
+        # --- Import labels ---
+        if labels:
+            print("Importing labels: {}".format(labels))
+            bridge.import_labels(labels)
 
-    # --- Apply mastering ---
-    if not args.no_master:
-        from FoxDot.lib.AudacityBridge.macros import is_macro_installed
-        if not is_macro_installed():
-            print("Warning: FoxDot-Master macro not found in Audacity.")
-            print("  Run: python scripts/install_mastering_macro.py")
-            print("  Skipping mastering step.")
+        # --- Apply mastering ---
+        if not args.no_master:
+            from FoxDot.lib.AudacityBridge.macros import is_macro_installed
+            if not is_macro_installed():
+                print("Warning: FoxDot-Master macro not found in Audacity.")
+                print("  Run: python scripts/install_mastering_macro.py")
+                print("  Skipping mastering step.")
+            else:
+                print("Applying FoxDot-Master mastering macro...")
+                bridge.apply_foxdot_master()
         else:
-            print("Applying FoxDot-Master mastering macro...")
-            bridge.apply_foxdot_master()
-    else:
-        print("Skipping mastering (--no-master).")
+            print("Skipping mastering (--no-master).")
 
-    # --- Export ---
-    print("Exporting to: {} [{}]".format(output, args.format))
-    bridge.export_audio(output, format=args.format)
+        # --- Export ---
+        print("Exporting to: {} [{}]".format(output, args.format))
+        bridge.export_audio(output, format=args.format)
 
-    print()
-    print("Post-session processing complete.")
-    print("  Input:  {}".format(recording))
-    if labels:
-        print("  Labels: {}".format(labels))
-    print("  Output: {}".format(output))
+        print()
+        print("Post-session processing complete.")
+        print("  Input:  {}".format(recording))
+        if labels:
+            print("  Labels: {}".format(labels))
+        print("  Output: {}".format(output))
+    finally:
+        bridge.close()
 
 
 if __name__ == "__main__":
