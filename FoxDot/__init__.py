@@ -25,30 +25,25 @@ with open(_os.path.join(_os.path.dirname(__file__), "lib", ".version")) as _f:
 def boot_supercollider():
     """ Uses subprocesses to boot supercollider from the cli """
 
-    import time
     import platform
     import os
     import subprocess
-    import getpass
 
     try:
         import psutil
     except ImportError:
         raise ImportError("psutil is required. Install it with: pip install psutil>=7.0")
 
-    sclangpath = "" #find path to sclang
-
-    thispath = "" #find this path
-
     thisdir = os.getcwd()
 
     OS = platform.system()
 
-    username = getpass.getuser()
-
     if(OS == "Windows"):
 
-        sclangloc = os.popen('where /R "C:\\Program Files" sclang.exe').read()
+        sclangloc = subprocess.run(
+            ['where', '/R', 'C:\\Program Files', 'sclang.exe'],
+            capture_output=True, text=True, check=False
+        ).stdout.strip()
 
         thiscwd = str(sclangloc)
 
@@ -65,30 +60,27 @@ def boot_supercollider():
             return False
 
 
-        running = (is_proc_running("sclang"))
+        running = is_proc_running("sclang")
 
-        if(running == False):
+        if not running:
             startup = thisdir+"/FoxDot/startup.scd"
-            #os.system("sclang"+startup+" &")
-            subprocess.Popen([sclangloc, startup], cwd=ourcwd, shell=True)
+            subprocess.Popen([sclangloc, startup], cwd=ourcwd)
 
     elif(OS == "Linux"):
 
         def is_proc_running(name):
             for p in psutil.process_iter(attrs=["name","cmdline"]):
-                #print(p);
                 procname = p.info['name'] or \
                      p.info['cmdline'] and p.info['cmdline'][0] == name
                 if(procname.startswith(name)):
                     return True
+            return False
 
+        running = is_proc_running("sclang")
 
-        running = (is_proc_running("sclang"))
-
-        if(running == False):
+        if not running:
             startup = thisdir+"/FoxDot/startup.scd"
-            #os.system('sclang "/home/foxdot/Desktop/FoxDot-Cross-Platform/FoxDot/startup.scd" &') #fuctional
-            os.system("sclang "+startup+" &")
+            subprocess.Popen(["sclang", startup])
 
 
     else:

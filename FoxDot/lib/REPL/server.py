@@ -77,10 +77,9 @@ class REPLServer:
         captured_out = io.StringIO()
         captured_err = io.StringIO()
 
-        old_stdout = sys.stdout
-        old_stderr = sys.stderr
-
         with self._lock:
+            old_stdout = sys.stdout
+            old_stderr = sys.stderr
             sys.stdout = captured_out
             sys.stderr = captured_err
             try:
@@ -98,6 +97,8 @@ class REPLServer:
 
         stdout_val = captured_out.getvalue()
         stderr_val = captured_err.getvalue()
+        captured_out.close()
+        captured_err.close()
 
         if not success:
             return ResultMessage.error_result(msg_id, error_msg, tb_str)

@@ -52,7 +52,8 @@ if args.dir:
         # Exit with last error
 
         import sys, traceback
-        sys.exit(traceback.print_exc(limit=1))
+        traceback.print_exc(limit=1)
+        sys.exit(1)
 
 if args.startup:
 
@@ -63,7 +64,8 @@ if args.startup:
     except OSError as e:
 
         import sys, traceback
-        sys.exit(traceback.print_exc(limit=1))
+        traceback.print_exc(limit=1)
+        sys.exit(1)
 
 if args.no_startup:
 
