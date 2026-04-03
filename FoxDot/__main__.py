@@ -90,7 +90,7 @@ if args.post_process:
         _post_cmd += ['--format', args.format]
     if args.no_master:
         _post_cmd.append('--no-master')
-    sys.exit(subprocess.call(_post_cmd))
+    sys.exit(subprocess.run(_post_cmd).returncode)
 
 if args.repl:
 

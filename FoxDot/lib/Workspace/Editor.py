@@ -10,7 +10,7 @@ from __future__ import absolute_import, division, print_function
 try:
     from ctypes import windll
     windll.shcore.SetProcessDpiAwareness(1)
-except:
+except (ImportError, AttributeError, OSError):
     pass
 
 # Tkinter Interface
@@ -308,7 +308,7 @@ class workspace:
             self.text.bind("<{}-#>".format(ctrl), self.toggle_console)
             self.toggle_key = "#"
 
-        except:
+        except TclError:
 
             self.text.bind("<{}-G>".format(ctrl), self.toggle_console)
             self.toggle_key = "G"
@@ -515,7 +515,7 @@ class workspace:
             execute( self.text.get(a, b) )
             # execute.update_line_numbers(self.text, a, b)
 
-        except:
+        except Exception:
 
             pass
 
@@ -586,7 +586,7 @@ class workspace:
             execute( self.text.get( a , b ) )
             # execute.update_line_numbers(self.text, a, b)
 
-        except:
+        except Exception:
 
             pass
 
@@ -933,7 +933,7 @@ class workspace:
                 return "break"
             else:
                 self.delete(event)
-        except:
+        except TclError:
             pass
 
         # Insert white space
@@ -1177,7 +1177,7 @@ class workspace:
             a, b = self.text.index(SEL_FIRST), self.text.index(SEL_LAST)
             self.text.delete(SEL_FIRST, SEL_LAST)
             return True
-        except:
+        except TclError:
             return False
 
     def text_selected(self):
@@ -1185,7 +1185,7 @@ class workspace:
         try:
             self.text.index(SEL_FIRST)
             return True
-        except:
+        except TclError:
             return False
 
     """
@@ -1321,7 +1321,7 @@ class workspace:
 
                 self.check_namespace()
 
-            except:
+            except Exception:
 
                 pass
 
@@ -1730,7 +1730,7 @@ class workspace:
 
             self.text.mark_set(INSERT, origin)
 
-        except:
+        except (ValueError, TclError):
 
             return
 

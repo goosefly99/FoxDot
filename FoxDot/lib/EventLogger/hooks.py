@@ -92,26 +92,41 @@ def install_hooks(logger, clock):
             )
         # All hook functions mutate _originals and patch classes.
         # Keep them inside the lock to prevent races with remove_hooks().
-        hook_clock_bpm(logger, clock)
-        hook_player_rshift(logger)
-        hook_player_stop(logger)
+        # If any hook fails, roll back partially installed hooks so the
+        # system is not left in an inconsistent half-patched state.
+        try:
+            hook_clock_bpm(logger, clock)
+            hook_player_rshift(logger)
+            hook_player_stop(logger)
+        except Exception:
+            # Roll back any hooks that were already installed
+            _restore_originals()
+            raise
+
+
+def _restore_originals():
+    """Restore all patched methods from ``_originals`` and clear the dict.
+
+    Must be called while ``_lock`` is held.
+    """
+    if 'clock_setattr' in _originals:
+        cls, original = _originals.pop('clock_setattr')
+        cls.__setattr__ = original
+
+    if 'player_rshift' in _originals:
+        from ..Players import Player
+        Player.__rshift__ = _originals.pop('player_rshift')
+
+    if 'player_stop' in _originals:
+        from ..Players import Player
+        Player.stop = _originals.pop('player_stop')
+
+    if 'player_pause' in _originals:
+        from ..Players import Player
+        Player.pause = _originals.pop('player_pause')
 
 
 def remove_hooks():
     """Remove all hooks. Restore original methods."""
     with _lock:
-        if 'clock_setattr' in _originals:
-            cls, original = _originals.pop('clock_setattr')
-            cls.__setattr__ = original
-
-        if 'player_rshift' in _originals:
-            from ..Players import Player
-            Player.__rshift__ = _originals.pop('player_rshift')
-
-        if 'player_stop' in _originals:
-            from ..Players import Player
-            Player.stop = _originals.pop('player_stop')
-
-        if 'player_pause' in _originals:
-            from ..Players import Player
-            Player.pause = _originals.pop('player_pause')
+        _restore_originals()

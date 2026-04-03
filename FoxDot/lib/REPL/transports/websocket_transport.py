@@ -82,11 +82,13 @@ class WebSocketTransport:
     def stop(self):
         """Signal the server to stop and wait for threads to terminate."""
         self._stop_event.set()
-        if self._loop is not None and self._ws_server is not None:
+        loop = self._loop          # snapshot to avoid race with _run_event_loop
+        ws_server = self._ws_server
+        if loop is not None and ws_server is not None:
             try:
-                self._loop.call_soon_threadsafe(self._ws_server.close)
-            except RuntimeError:
-                # Event loop already closed
+                loop.call_soon_threadsafe(ws_server.close)
+            except (RuntimeError, AttributeError):
+                # Event loop already closed or set to None concurrently
                 pass
         if self._broadcast_thread is not None:
             self._broadcast_thread.join(timeout=5)
@@ -121,8 +123,10 @@ class WebSocketTransport:
             async for raw in websocket:
                 response = await self._handle_message(raw)
                 await websocket.send(response)
+        except asyncio.CancelledError:
+            pass  # expected during shutdown
         except Exception:
-            logger.debug("WebSocket client error", exc_info=True)
+            logger.warning("WebSocket client error", exc_info=True)
         finally:
             with self._clients_lock:
                 self._clients.discard(websocket)
@@ -171,10 +175,11 @@ class WebSocketTransport:
         """Send *message* to all connected clients from a non-async context."""
         with self._clients_lock:
             has_clients = bool(self._clients)
-        if self._loop is None or self._loop.is_closed() or not has_clients:
+        loop = self._loop  # snapshot to avoid race with _run_event_loop
+        if loop is None or loop.is_closed() or not has_clients:
             return
         asyncio.run_coroutine_threadsafe(
-            self._broadcast_async(message), self._loop
+            self._broadcast_async(message), loop
         )
 
     async def _broadcast_async(self, message: str):

@@ -819,9 +819,12 @@ class TempoServer(ThreadedServer):
         try:
 
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            s.connect(("8.8.8.8", 80))
-            self.ip_pub = s.getsockname()[0]
-            s.close()
+            s.settimeout(2)
+            try:
+                s.connect(("8.8.8.8", 80))
+                self.ip_pub = s.getsockname()[0]
+            finally:
+                s.close()
 
         except OSError:
 
@@ -882,7 +885,8 @@ class RequestHandler(socketserver.BaseRequestHandler):
 
         # Should be "init" message
 
-        assert "init" in data
+        if data is None or "init" not in data:
+            raise ValueError("Expected 'init' message from client, received: {}".format(data))
 
         send_to_socket(self.request, {"clock_time": time.time()}) # maybe time at a beat?
 
@@ -1023,9 +1027,11 @@ class TempoClient:
 
         time_data = read_from_socket(self.socket)
 
+        if time_data is None:
+            return
+
         self.stop_timing()
 
-        # self.metro.calculate_nudge(time_data["clock_time"], self.stop_time, self.latency)
         self.metro.calculate_nudge(time_data["clock_time"], self.start_time, self.latency)
         
         # Enter loop

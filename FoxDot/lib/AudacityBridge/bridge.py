@@ -24,8 +24,15 @@ def _escape_path(filepath):
     literal double-quote would break the command syntax and could cause
     unexpected behaviour.  We replace any embedded quotes with their
     escaped form.
+
+    Newlines are rejected because Audacity's pipe protocol uses them as
+    message delimiters — an embedded newline would split one command into
+    two, enabling command injection.
     """
-    return str(filepath).replace('"', '\\"')
+    filepath_str = str(filepath)
+    if '\n' in filepath_str or '\r' in filepath_str:
+        raise ValueError("Filepath must not contain newline characters: {!r}".format(filepath_str))
+    return filepath_str.replace('"', '\\"')
 
 
 def _get_pipe_paths():
