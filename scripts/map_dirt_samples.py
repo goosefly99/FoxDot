@@ -267,12 +267,14 @@ def copy_samples(
             if dest_path.exists():
                 continue  # already mapped, skip
 
-            stats["files"] += 1
             if not dry_run:
                 try:
                     shutil.copy2(wav, dest_path)
+                    stats["files"] += 1
                 except OSError as e:
                     stats["errors"].append(f"{wav} -> {dest_path}: {e}")
+            else:
+                stats["files"] += 1
 
     return stats
 

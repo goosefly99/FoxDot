@@ -728,8 +728,8 @@ class SCLangServerManager(ServerManager):
             
             for fn in files:
 
-                f = open(fn)
-                startup.write(f.read())
+                with open(fn) as f:
+                    startup.write(f.read())
                 startup.write("\n\n")
 
             startup.write("};")
@@ -739,7 +739,7 @@ class SCLangServerManager(ServerManager):
     def quit(self):
         if self.booted:
             self.client.send(OSCMessage("/quit"))
-            sleep(1)
+            time.sleep(1)
             self.daemon.terminate()
         if self._is_recording:
             self.stopRecording()
@@ -791,7 +791,8 @@ def send_to_socket(sock, data):
         sends to a connected socket """
     msg = Message(data)
     # Get length and store as string
-    msg_len, msg_str = len(msg), str(msg).encode()
+    msg_str = str(msg).encode()
+    msg_len = len(msg_str)
     # Continually send until we know all of the data has been sent
     sent = 0
     while sent < msg_len:
@@ -919,7 +920,7 @@ class RequestHandler(socketserver.BaseRequestHandler):
 
                     self.master.update_tempo(self, **data["new_bpm"])
 
-                elif "latency":
+                elif "latency" in data:
 
                     send_to_socket(self.request, ["latency"])
 

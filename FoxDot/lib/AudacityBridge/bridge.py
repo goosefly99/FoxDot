@@ -157,7 +157,7 @@ class AudacityBridge:
         Args:
             filepath: Absolute path to an Audacity-format label file.
         """
-        return self._send('Import2: Filename="{}"'.format(_escape_path(filepath)))
+        return self._send('ImportLabels: Filename="{}"'.format(_escape_path(filepath)))
 
     def export_labels(self, filepath):
         """Export current labels to a .txt file.

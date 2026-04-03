@@ -80,4 +80,11 @@ except FileNotFoundError:
 
 for key, value in os.environ.items():
     if key in globals():
-        globals()[key] = value
+        original = globals()[key]
+        if original is None:
+            globals()[key] = value
+        else:
+            try:
+                globals()[key] = type(original)(value)
+            except (ValueError, TypeError):
+                pass

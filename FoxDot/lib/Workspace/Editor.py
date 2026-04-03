@@ -820,7 +820,7 @@ class workspace:
                         if SYSTEM == WINDOWS:
                             self.root.wm_attributes('-transparentcolor', alpha)
                         else:
-                            self.root.wm_attributes("-transdef toggle_prparent", True)
+                            self.root.wm_attributes("-transparent", True)
                     except TclError:
                         self.using_alpha = True
                 if self.using_alpha:
@@ -1793,6 +1793,7 @@ class workspace:
         return
 
     def clear_temp_file(self):
+        write_to_file(FOXDOT_TEMP_FILE, "")
         return
 
     def clear_console(self):

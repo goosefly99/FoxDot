@@ -106,7 +106,7 @@ class TestAudacityBridgeCommands(unittest.TestCase):
         bridge = self._make_bridge()
         bridge.import_labels('/tmp/my "labels".txt')
         cmd = bridge._sent_commands[-1]
-        self.assertIn('Import2:', cmd)
+        self.assertIn('ImportLabels:', cmd)
         self.assertIn('my \\"labels\\"', cmd)
 
     def test_export_labels_escapes_path(self):
