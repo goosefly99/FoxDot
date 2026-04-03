@@ -421,7 +421,7 @@ class TimeVar(object):
         return float(self.now()) >= float(other)
 
     def __le__(self, other):
-        return float(self.now()) >= float(other)
+        return float(self.now()) <= float(other)
 
     # %
     def __mod__(self, other):
