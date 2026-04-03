@@ -30,10 +30,10 @@ ServerInfo = namedtuple(
 
 class OSCClientWrapper(OSCClient):
     error_printed=False
-    def send(*args, **kwargs):
+    def send(self, *args, **kwargs):
         """ Sends the message given but prints errors instead of raising them """
         try:
-            OSCClient.send(*args, **kwargs)
+            OSCClient.send(self, *args, **kwargs)
         except OSCClientError as e:
             if not OSCClientWrapper.error_printed:
                 print("Error sending message to SuperCollider server instance: make sure FoxDot quark is running and try again.")
@@ -194,6 +194,8 @@ class SCLangServerManager(ServerManager):
 
         self.fx_setup_done = False
         self.fx_names = {}
+
+        self._is_recording = False
 
         self.reset()
 
@@ -694,21 +696,17 @@ class SCLangServerManager(ServerManager):
         """ Boots SuperCollider using `subprocess`"""
 
         if not self.booted:
-            
-            os.chdir(SC_DIRECTORY)
-            
+
             print("Booting SuperCollider Server...")
 
             self.daemon = subprocess.Popen([SCLANG_EXEC, '-D', FOXDOT_STARTUP_FILE])
 
-            os.chdir(USER_CWD)
-
             self.booted = True
 
         else:
-            
+
             print("Warning: SuperCollider already running")
-            
+
         return
 
     def makeStartupFile(self):
@@ -749,13 +747,7 @@ class SCLangServerManager(ServerManager):
         self.forward = OSCClientWrapper()
         self.forward.connect( (addr, port) )
 
-try:
-    
-    import socketserver
-
-except ImportError:
-
-    import SocketServer as socketserver
+import socketserver
 
 
 class Message:
@@ -778,7 +770,7 @@ def read_from_socket(sock):
     # Get number single int that tells us how many digits to read
     try:
         bits = int(sock.recv(4).decode())
-    except:
+    except (OSError, ValueError, UnicodeDecodeError):
         return None
     if bits > 0:
         # Read the remaining data (JSON)
@@ -866,8 +858,8 @@ class TempoServer(ThreadedServer):
     def kill(self):
         """ Properly terminates the server instance """
         self.running = False
-        self.server_thread.join(0)
         self.shutdown()
+        self.server_thread.join(5)
         self.server_close()
         return
 

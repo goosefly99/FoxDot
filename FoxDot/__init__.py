@@ -45,17 +45,16 @@ def boot_supercollider():
             capture_output=True, text=True, check=False
         ).stdout.strip()
 
-        thiscwd = str(sclangloc)
-
-        ourcwd = thiscwd.replace('\\sclang.exe\n', '')
+        ourcwd = os.path.dirname(sclangloc)
 
         def is_proc_running(name):
             for p in psutil.process_iter(attrs=["name", "exe", "cmdline"]):
-                #print(p);
-                procname = p.info['name'] or \
-                     p.info['exe'] and os.path.basename(p.info['exe']) == name or \
-                     p.info['cmdline'] and p.info['cmdline'][0] == name
-                if(procname.startswith(name)):
+                info = p.info
+                proc_name = info.get('name') or ''
+                exe_name = os.path.basename(info.get('exe') or '')
+                cmd_parts = info.get('cmdline') or []
+                cmd_name = cmd_parts[0] if cmd_parts else ''
+                if any(n.startswith(name) for n in (proc_name, exe_name, cmd_name) if n):
                     return True
             return False
 
@@ -69,10 +68,12 @@ def boot_supercollider():
     elif(OS == "Linux"):
 
         def is_proc_running(name):
-            for p in psutil.process_iter(attrs=["name","cmdline"]):
-                procname = p.info['name'] or \
-                     p.info['cmdline'] and p.info['cmdline'][0] == name
-                if(procname.startswith(name)):
+            for p in psutil.process_iter(attrs=["name", "cmdline"]):
+                info = p.info
+                proc_name = info.get('name') or ''
+                cmd_parts = info.get('cmdline') or []
+                cmd_name = cmd_parts[0] if cmd_parts else ''
+                if any(n.startswith(name) for n in (proc_name, cmd_name) if n):
                     return True
             return False
 

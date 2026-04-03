@@ -151,6 +151,7 @@ def instantiate_player_objects():
 def _reload_synths():
     """ Resends all the synth / sample info to SuperCollider. Useful for times
         when starting FoxDot before running `FoxDot.start` in SuperCollider. """
+    from importlib import reload
     from . import SCLang
     from . import Effects
     reload(SCLang._SynthDefs)

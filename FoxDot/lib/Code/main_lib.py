@@ -134,7 +134,9 @@ class FoxDotCode:
 
                     print(response)
 
-            exec(self._compile(code), self.namespace)
+                code = self._compile(code)
+
+            exec(code, self.namespace)
 
         except Exception as e:
 
@@ -219,8 +221,6 @@ def handle_stdin():
         except(EOFError, KeyboardInterrupt):
 
             sys.exit("Quitting")
-
-    return
 
 def stdout(code):
     """ Shell-based output """
