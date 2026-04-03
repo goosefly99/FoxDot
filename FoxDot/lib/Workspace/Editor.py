@@ -713,23 +713,19 @@ class workspace:
     def openfile(self, event=None):
         path = tkFileDialog.askopenfilename()
         if path != "":
-            f = open(path)
-            text = f.read()
-            f.close()
+            with open(path, encoding="utf-8") as f:
+                text = f.read()
             self.set_all(text)
             self.set_window_title(path)
         return "break"
 
     def loadfile(self, path):
         try:
-            if PY_VERSION == 2:
-                f = open(path)
-            else:
-                f = open(path, encoding="utf8")
+            with open(path, encoding="utf-8") as f:
+                text = f.read()
         except Exception as e:
             return print("{} error occurred when loading file:\n    - '{}'".format(e.__class__.__name__, path))
-        self.set_all(f.read())
-        f.close()
+        self.set_all(text)
         return
 
     def newfile(self, event=None):

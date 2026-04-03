@@ -821,7 +821,7 @@ class Player(Repeatable):
 
         if synthdef == SamplePlayer:
 
-            if type(degree) == str:
+            if isinstance(degree, str):
 
                 self.playstring = degree
 
@@ -1441,12 +1441,12 @@ class Player(Repeatable):
         except KeyError as e:
 
             print(attr, self.attr[attr], index)
-            raise(e)
+            raise e
 
         except ZeroDivisionError as e:
 
             print(self, attr, self.attr[attr], index)
-            raise(e)
+            raise e
 
         # Force and timevar etc into floats
 

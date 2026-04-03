@@ -262,7 +262,7 @@ class TempoClock(object):
 
         except AssertionError as err:
 
-            raise(ValueError(err))
+            raise ValueError(err)
 
         next_bar = self.next_bar()
 

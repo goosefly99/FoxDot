@@ -197,7 +197,7 @@ class Repeatable(object):
 
             err = "{} is not a valid method for type {}".format(cmd, self.__class__)
             
-            raise(TypeError(err))
+            raise TypeError(err)
 
         assert callable(method)
         

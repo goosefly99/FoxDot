@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
 import os
+from copy import copy
 from . import Env
 from .SCLang import *
 from ..ServerManager import Server
@@ -164,7 +165,7 @@ class SynthDefBaseClass(object):
         try:
             if key in self.var + list(self.defaults.keys()):
                 self.attr.append((key, value))
-        except:
+        except (AttributeError, TypeError):
             pass
         if key not in self.__dict__ or str(key) != str(value):
             self.__dict__[key] = value
@@ -247,7 +248,7 @@ class SynthDefBaseClass(object):
         try:
             object.__getattribute__(self, 'env')
             return True
-        except:
+        except AttributeError:
             return False
 
     def load(self):
