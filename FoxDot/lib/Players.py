@@ -886,7 +886,7 @@ class Player(Repeatable):
 
                 after = False
 
-            elif kwargs.get("quantise", True) == False:
+            elif not kwargs.get("quantise", True):
 
                 start_point = self.metro.now()
 
@@ -1641,7 +1641,7 @@ class Player(Repeatable):
 
         # Only send if amp > 0 etc
 
-        if verbose and (message["amp"] > 0) and ((self.synthdef != SamplePlayer and message["freq"] != None) or (self.synthdef == SamplePlayer and message["buf"] > 0)):
+        if verbose and (message["amp"] > 0) and ((self.synthdef != SamplePlayer and message["freq"] is not None) or (self.synthdef == SamplePlayer and message["buf"] > 0)):
 
             # Need to send delay and synthdef separately
 
@@ -1743,7 +1743,7 @@ class Player(Repeatable):
 
             scale  = kwargs.get("scale", self.scale)
 
-            if degree == None:
+            if degree is None:
 
                 freq, midinote = None, None
 

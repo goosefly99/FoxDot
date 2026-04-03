@@ -68,7 +68,7 @@ class TimeVar(object):
 
         # If the clock is not ticking, start it
 
-        if self.metro.ticking == False:
+        if not self.metro.ticking:
 
             self.metro.start()
 

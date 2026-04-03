@@ -9,7 +9,7 @@ def stdout(*args):
     sys.__stdout__.write(" ".join([str(s) for s in args]) + "\n")
 
 def index(index1, index2=None):
-    if type(index1) == str and index2 == None:
+    if isinstance(index1, str) and index2 is None:
         return tuple(int(n) for n in index1.split('.'))
     return str(index1) + '.' + str(index2)
 

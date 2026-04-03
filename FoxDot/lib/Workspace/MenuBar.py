@@ -135,7 +135,7 @@ class MenuBar(Menu):
 
     def allow_connections(self, **kwargs):
         """ Starts a new instance of ServerManager.TempoServer and connects it with the clock """
-        if self.listening_for_connections.get() == True:
+        if self.listening_for_connections.get():
             Clock = self.root.namespace["Clock"]
             Clock.start_tempo_server(TempoServer, **kwargs)
             print("Listening for connections on {}".format(Clock.tempo_server))

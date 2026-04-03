@@ -153,7 +153,7 @@ class ServerManager(object):
         bundle  = OSCBundle(time=kwargs.get("timestamp", 0))
         message = OSCMessage(self.osc_address)
         for item in args:
-            if type(item) == dict:
+            if isinstance(item, dict):
                 message.append(self.create_osc_msg(item))
             else:
                 message.append(item)

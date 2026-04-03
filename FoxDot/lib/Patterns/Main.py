@@ -1548,7 +1548,7 @@ def convert_nested_data(data):
 
         return data
 
-    elif data == None:
+    elif data is None:
 
         return NoneConst()
 

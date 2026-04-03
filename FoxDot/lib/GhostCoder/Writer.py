@@ -74,7 +74,7 @@ class Ghost:
 
         except queue.Empty:
 
-            if self.running == True:
+            if self.running:
 
                 self.widget.root.after(choice([2000, 3000, 4000, 5000]), self.act)
             

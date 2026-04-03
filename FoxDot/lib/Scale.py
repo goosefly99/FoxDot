@@ -312,7 +312,7 @@ class _DefaultScale(ScaleType):
     def set(self, new, *args, **kwargs):
         """ Change the contents of the default scale """
 
-        if type(new) == str:
+        if isinstance(new, str):
 
             self.scale = Scale.get_scale(new)
 

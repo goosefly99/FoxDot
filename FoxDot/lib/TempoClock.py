@@ -646,7 +646,7 @@ class TempoClock(object):
 
         # Start the clock ticking if not already
 
-        if self.ticking == False:
+        if not self.ticking:
 
             self.start()
 

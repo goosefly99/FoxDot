@@ -166,7 +166,7 @@ class _whenLibrary:
             
             for name, expression in self.library.items():
 
-                if expression.remove_me == True:
+                if expression.remove_me:
 
                     del self.library[name]
 
