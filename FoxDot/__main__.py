@@ -13,6 +13,7 @@ from __future__ import absolute_import, division, print_function
 
 from .lib import FoxDotCode, handle_stdin
 from .lib.Settings import REPL_WEBSOCKET_PORT
+from . import boot_supercollider as _boot_supercollider
 
 import argparse
 
@@ -73,7 +74,7 @@ if args.no_startup:
 
 if args.boot:
 
-    FoxDotCode.boot_supercollider()
+    _boot_supercollider()
 
 if args.post_process:
 

@@ -69,10 +69,8 @@ class _StartupFile:
     def load(self):
         if self.path is not None:
             try:
-                file = open(self.path)
-                code = file.read()
-                file.close()
-                return code
+                with open(self.path) as file:
+                    return file.read()
             except (IOError, OSError):
                 WarningMsg("'{}' startup file not found.".format(self.path))
         return ""

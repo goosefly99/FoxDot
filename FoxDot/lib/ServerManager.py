@@ -5,7 +5,7 @@ import queue
 
 import json
 import socket
-import sys
+import subprocess
 import threading
 import time
 import itertools
@@ -978,9 +978,7 @@ class TempoClient:
 
         except Exception as e:
 
-            raise(e)
-
-            raise(ConnectionError("Could not connect to host '{}'".format( self.server_hostname ) ) )
+            raise ConnectionError("Could not connect to host '{}'".format( self.server_hostname ) ) from e
 
         # connect to the server and listen for new updates for the tempo-clock
 
