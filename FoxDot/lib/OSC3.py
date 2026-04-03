@@ -1065,7 +1065,7 @@ class OSCClient(object):
 
     def _setSocket(self, skt):
         """Set and configure client socket"""
-        if self.socket != None:
+        if self.socket is not None:
             self.close()
         self.socket = skt
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, self.sndbuf_size)
@@ -1086,7 +1086,7 @@ class OSCClient(object):
         The Client will send from the Server's socket.
         The Server will use this Client instance to send replies.
         """
-        if server == None:
+        if server is None:
             if hasattr(self,'server') and self.server:
                 if self.server.client != self:
                     raise OSCClientError("Internal inconsistency")
@@ -1101,7 +1101,7 @@ class OSCClient(object):
         self._setSocket(server.socket.dup())
         self.server = server
 
-        if self.server.client != None:
+        if self.server.client is not None:
             self.server.client.close()
         
         self.server.client = self
@@ -1109,7 +1109,7 @@ class OSCClient(object):
     def close(self):
         """Disconnect & close the Client's socket
         """
-        if self.socket != None:
+        if self.socket is not None:
             self.socket.close()
             self.socket = None
 
@@ -1136,7 +1136,7 @@ class OSCClient(object):
         if self.socket and other.socket:
             sockEqual = cmp(self.socket._sock, other.socket._sock)
         else:
-            sockEqual = (self.socket == None and other.socket == None)
+            sockEqual = (self.socket is None and other.socket is None)
 
         if not sockEqual:
             return False
@@ -1144,7 +1144,7 @@ class OSCClient(object):
         if  self.server and other.server:
             return cmp(self.server, other.server)
         else:
-            return self.server == None and other.server == None
+            return self.server is None and other.server is None
     
     def __ne__(self, other):
         """Compare function.
@@ -1176,7 +1176,7 @@ class OSCClient(object):
             self.client_address = None
             raise OSCClientError("SocketError: %s" % str(e))
         
-        if self.server != None:
+        if self.server is not None:
             self.server.return_port = address[1]
 
     def sendto(self, msg, address, timeout=None):
@@ -1262,7 +1262,7 @@ def parseFilterStr(args):
             if len(plusfs):
                 plusfs = '/' + plusfs.strip('/')
             
-            if (head == None) and (plusfs != "/*"):
+            if (head is None) and (plusfs != "/*"):
                 head = plusfs
             elif len(plusfs):
                 if plusfs == '/*':
@@ -1279,7 +1279,7 @@ def parseFilterStr(args):
                     else:
                         out[minusfs] = False
                 
-        if prefix == None:
+        if prefix is None:
             prefix = head
 
     return [prefix, out]
@@ -1395,14 +1395,14 @@ class OSCMultiClient(OSCClient):
         if address not in list(self.targets.keys()):
             self.targets[address] = ["",{}]
         
-        if prefix != None:
+        if prefix is not None:
             if len(prefix):
                 # make sure prefix starts with ONE '/', and does not end with '/'
                 prefix = '/' + prefix.strip('/')
                 
             self.targets[address][0] = prefix
         
-        if filters != None:
+        if filters is not None:
             if type(filters) in str:
                 (_, filters) = parseFilterStr(filters)
             elif type(filters) != dict:
@@ -1447,7 +1447,7 @@ class OSCMultiClient(OSCClient):
         If the 'prefix' argument is given, the Target is only deleted if the address and prefix match.
         """
         try:
-            if prefix == None:
+            if prefix is None:
                 del self.targets[address]
             elif prefix == self.targets[address][0]:
                 del self.targets[address]
@@ -1489,7 +1489,7 @@ class OSCMultiClient(OSCClient):
             address = (host, port)
             
             if address in list(self.targets.keys()):
-                if prefix == None:
+                if prefix is None:
                     return True
                 elif prefix == self.targets[address][0]:
                     return True
@@ -1563,7 +1563,7 @@ class OSCMultiClient(OSCClient):
         Returns (None, []) if address not found.
         """
         (addr, (prefix, filters)) = self.getOSCTarget(address)
-        if addr == None:
+        if addr is None:
             return (None, [])
 
         return ("osc://%s" % getUrlStr(addr, prefix), getFilterStr(filters))
@@ -1759,15 +1759,15 @@ class OSCAddressSpace:
                 matched += 1
                 if isinstance(reply, OSCMessage):
                     replies.append(reply)
-                elif reply != None:
+                elif reply is not None:
                     raise TypeError("Message-callback %s did not return OSCMessage or None: %s" % (self.server.callbacks[addr], type(reply)))
-                    
+
         if matched == 0:
             if 'default' in self.callbacks:
                 reply = self.callbacks['default'](pattern, tags, data, client_address)
                 if isinstance(reply, OSCMessage):
                     replies.append(reply)
-                elif reply != None:
+                elif reply is not None:
                     raise TypeError("Message-callback %s did not return OSCMessage or None: %s" % (self.server.callbacks['default'], type(reply)))
             else:
                 raise NoCallbackError(pattern)
@@ -1907,7 +1907,7 @@ class OSCServer(UDPServer, OSCAddressSpace):
         self.running = False
         self.client = None
         
-        if client == None:
+        if client is None:
             self.client = OSCClient(server=self)
         else:
             self.setClient(client)
@@ -1918,7 +1918,7 @@ class OSCServer(UDPServer, OSCAddressSpace):
         if not isinstance(client, OSCClient):
             raise ValueError("'client' argument is not a valid OSCClient object")
         
-        if client.server != None:
+        if client.server is not None:
             raise OSCServerError("Provided OSCClient already has an OSCServer-instance: %s" % str(client.server))
         
         # Server socket is already listening at this point, so we can't use the client's socket.
@@ -2268,7 +2268,7 @@ class OSCServer(UDPServer, OSCAddressSpace):
 
         (addr, _) = parseUrlStr(url)
         
-        if addr == None:
+        if addr is None:
             addr = client_address
         else:
             (host, port) = addr
@@ -2539,19 +2539,19 @@ class OSCStreamRequestHandler(StreamRequestHandler, OSCAddressSpace):
         """
         # get OSC packet size from stream which is prepended each transmission
         chunk = self._receive(4)
-        if chunk == None:
+        if chunk is None:
             print("SERVER: Socket has been closed.")
             return None
         # extract message length from big endian unsigned long (32 bit) 
         slen = struct.unpack(">L", chunk)[0]
         # receive the actual message
         chunk = self._receive(slen)
-        if chunk == None:
+        if chunk is None:
             print("SERVER: Socket has been closed.")
             return None
         # decode OSC data and dispatch
         msg = decodeOSC(chunk)
-        if msg == None:
+        if msg is None:
             raise OSCError("SERVER: Message decoding failed.")        
         return msg
 
@@ -2570,7 +2570,7 @@ class OSCStreamRequestHandler(StreamRequestHandler, OSCAddressSpace):
         try:
             while True:
                 decoded = self._receiveMsg()
-                if decoded == None:
+                if decoded is None:
                     return
                 elif len(decoded) <= 0:
                     # if message decoding fails we try to stay in sync but print a message
@@ -2770,7 +2770,7 @@ class OSCStreamingClient(OSCAddressSpace):
             return None
         # decode OSC content
         msg = decodeOSC(chunk)
-        if msg == None:
+        if msg is None:
             raise OSCError("CLIENT: Message decoding failed.")
         return msg
 
