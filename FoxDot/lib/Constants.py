@@ -72,10 +72,14 @@ class _inf(const):
     def __div__(self, other):
         return _inf(self.value / other)
     def __rdiv__(self, other):
+        if self.value == 0:
+            return _inf(0)
         return _inf(other / self.value)
     def __truediv__(self, other):
         return _inf(self.value / other)
     def __rtruediv__(self, other):
+        if self.value == 0:
+            return _inf(0)
         return _inf(other / self.value)
     def __eq__(self, other):
         return isinstance(other, _inf)

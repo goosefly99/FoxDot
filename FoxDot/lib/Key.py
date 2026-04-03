@@ -202,20 +202,18 @@ class NumberKey(object):
 
     def index(self, sequence):
         """ Returns a Player Key that returns the element from sequence indexed using int(self) """
-        new = self.child(sequence)
-        def getitem(b, a):
+        def getitem(value):
             try:
-                return b[a]
+                return sequence[value]
             except TypeError:
-                return b
-        new.calculate = getitem
-        return new
+                return sequence
+        return self.spawn_child(getitem)
 
     def semitones(self):
         """ Converts the current value into the semitone value using the parent's scale """
-        new = self.child(0)
-        new.calculate = lambda a, b: self.parent.scale.semitones(b)
-        return new
+        def convert(value):
+            return self.parent.scale.semitones(value)
+        return self.spawn_child(convert)
 
     def simple_map(self, mapping):
         """ Creates a new Player key that maps the values in the dictionary (mapping)
@@ -274,24 +272,20 @@ class NumberKey(object):
         return self.spawn_child(mapping_function)
 
     def get_min(self):
-        new = self.child(0)
-        def f(a, b):
+        def f(value):
             try:
-                return min(b)
+                return min(value)
             except TypeError:
-                return b
-        new.calculate = f
-        return new
+                return value
+        return self.spawn_child(f)
 
     def get_max(self):
-        new = self.child(0)
-        def f(a, b):
+        def f(value):
             try:
-                return max(b)
+                return max(value)
             except TypeError:
-                return b
-        new.calculate = f
-        return new
+                return value
+        return self.spawn_child(f)
 
     def transform(self, func):
         """ Returns a child Player Key based on the func. If the value
