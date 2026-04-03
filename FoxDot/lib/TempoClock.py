@@ -583,7 +583,7 @@ class TempoClock(object):
 
                     sys.exit()
 
-                except:
+                except Exception:
 
                     print(error_stack())
 
@@ -1017,7 +1017,7 @@ class Wrapper(Code.LiveObject):
         args = modi(self.args, self.n)
         try:
             self.obj.__call__(*args)
-        except:
+        except (TypeError, ValueError):
             self.obj.__call__(args)
         Code.LiveObject.__call__(self)
 

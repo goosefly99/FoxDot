@@ -1194,10 +1194,10 @@ class OSCClient(object):
         ret = select.select([],[self._fd], [], timeout)
         try:
             ret[1].index(self._fd)
-        except:
+        except ValueError:
             # for the very rare case this might happen
             raise OSCClientError("Timed out waiting for file descriptor")
-        
+
         try:
             self._ensureConnected(address)
             self.socket.sendall(msg.getBinary())
@@ -1229,10 +1229,10 @@ class OSCClient(object):
         ret = select.select([],[self._fd], [], timeout)
         try:
             ret[1].index(self._fd)
-        except:
+        except ValueError:
             # for the very rare case this might happen
             raise OSCClientError("Timed out waiting for file descriptor")
-        
+
         try:
             self.socket.sendall(msg.getBinary())
         except socket.error as e:
@@ -1425,7 +1425,7 @@ class OSCMultiClient(OSCClient):
             (host, port) = address[:2]
             try:
                 host = socket.gethostbyname(host)
-            except:
+            except (socket.gaierror, OSError):
                 pass
                 
             address = (host, port)
@@ -1688,10 +1688,10 @@ class OSCMultiClient(OSCClient):
             ret = select.select([],[self._fd], [], timeout)
             try:
                 ret[1].index(self._fd)
-            except:
+            except ValueError:
                 # for the very rare case this might happen
                 raise OSCClientError("Timed out waiting for file descriptor")
-            
+
             try:
                 while len(binary):
                     sent = self.socket.sendto(binary, address)

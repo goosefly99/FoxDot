@@ -69,7 +69,7 @@ class BracketHandler:
 
                 ret = "break"
                 
-            except:
+            except Exception:
 
                 pass
 

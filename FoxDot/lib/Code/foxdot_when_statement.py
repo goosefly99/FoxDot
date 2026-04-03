@@ -105,11 +105,11 @@ class _whenStatement:
         """ If the action functions are @livefunctions, turn them on/off """    
         try:
             self.action.live = switch
-        except:
+        except AttributeError:
             pass
         try:
             self.notaction.live = (not switch)
-        except:
+        except AttributeError:
             pass
         return
 

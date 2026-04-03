@@ -617,7 +617,7 @@ class metaPattern(object):
         for item in self.data:
             try:
                 new.append(item.invert())
-            except:
+            except (AttributeError, TypeError):
                 new.append((((item / lrg) * -1) + 1) * lrg)
         return self.new(new)
 

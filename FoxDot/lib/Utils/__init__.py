@@ -153,7 +153,7 @@ def isiterable(obj):
     try:
         iter(obj)
         return True
-    except:
+    except TypeError:
         return False
 
 def recursive_any(seq):

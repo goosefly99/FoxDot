@@ -226,7 +226,7 @@ class Repeatable(object):
 
             self.metro.schedule( event, time )
 
-        except:
+        except Exception:
 
             pass
         

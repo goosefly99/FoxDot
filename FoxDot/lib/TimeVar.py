@@ -531,7 +531,7 @@ class Pvar(TimeVar):
 
             data = [asStream(val) for val in values]
 
-        except:
+        except (TypeError, ValueError):
 
             data = [values]
 

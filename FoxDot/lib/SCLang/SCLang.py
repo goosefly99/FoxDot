@@ -76,7 +76,7 @@ class instance:
             self = instance(str(self))
             other = instance(str(other))
             return (self, other)
-        except:
+        except (ValueError, TypeError):
             return
 
     def __getattr__(self, name, *args, **kwargs):

@@ -967,7 +967,7 @@ class workspace:
 
             self.text.tag_add(SEL, sel_a, sel_b)
 
-        except:
+        except Exception:
 
             pass
 

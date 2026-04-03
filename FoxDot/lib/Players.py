@@ -2120,7 +2120,7 @@ class Group:
             for p in self.players:
                 try:
                     setattr(p, name, value)
-                except:
+                except Exception:
                     WarningMsg("'%s' object has no attribute '%s'" % (str(p), name))
         except KeyError :
             self.__dict__[name] = value 
