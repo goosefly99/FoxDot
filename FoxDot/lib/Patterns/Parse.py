@@ -133,15 +133,9 @@ def feed(string):
 
                 raise ParseError(e)
 
-            try:
+            if len(chars) != 2:
 
-                assert(len(chars) == 2)
-
-            except AssertionError:
-
-                e = "'||' delimeters must contain exactly 2 elements"
-
-                raise ParseError(e)
+                raise ParseError("'||' delimeters must contain exactly 2 elements")
 
             # First is our list of sample chars
             

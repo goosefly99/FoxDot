@@ -83,10 +83,8 @@ class PRand(RandomGenerator):
         # Choosing from a list
         if hasattr(start, "__iter__"):
             self.data = Pattern(start)
-            try:
-                assert(len(self.data)>0)
-            except AssertionError:
-                raise AssertionError("{}: Argument size must be greater than 0".format(self.name))
+            if len(self.data) == 0:
+                raise ValueError("{}: Argument size must be greater than 0".format(self.name))
             self.choosing = True
             self.low = self.high = None
         
@@ -95,10 +93,8 @@ class PRand(RandomGenerator):
             self.choosing = False
             self.low  = start if stop is not None else 0
             self.high = stop  if stop is not None else start
-            try:
-                assert((self.high - self.low)>=1)
-            except AssertionError:
-                raise AssertionError("{}: Range size must be greater than 1".format(self.name))
+            if (self.high - self.low) < 1:
+                raise ValueError("{}: Range size must be greater than 1".format(self.name))
             self.data = "{}, {}".format(self.low, self.high)
 
         self.init_random(**kwargs)
@@ -146,11 +142,8 @@ class PwRand(RandomGenerator):
 
         self.args = (values, weights)
         
-        try:
-            assert(all(type(x) == int for x in weights))
-        except AssertionError:
-            e = "{}: Weights must be integers".format(self.name)
-            raise AssertionError(e)
+        if not all(isinstance(x, int) for x in weights):
+            raise TypeError("{}: Weights must be integers".format(self.name))
         
         self.data    = Pattern(values)
         self.weights = Pattern(weights).stretch(len(self.data))
@@ -170,7 +163,8 @@ class PChain(RandomGenerator):
         destinations.  """
     def __init__(self, mapping, **kwargs):
 
-        assert isinstance(mapping, dict)
+        if not isinstance(mapping, dict):
+            raise TypeError("PChain mapping must be a dict")
 
         RandomGenerator.__init__(self, **kwargs)
         
@@ -208,8 +202,12 @@ class PZ12(GeneratorPattern):
         an irrational value for p, however, results in a non-determined order of values. 
         Experimental, only works with 2 values.
     """
-    def __init__(self, tokens=[1,0], p=[1, 0.5]):
+    def __init__(self, tokens=None, p=None):
         GeneratorPattern.__init__(self)
+        if tokens is None:
+            tokens = [1, 0]
+        if p is None:
+            p = [1, 0.5]
         self.data    = tokens
         self.probs = [value / max(p) for value in p]
         self._prev   = []

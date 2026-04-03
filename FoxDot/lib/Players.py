@@ -1272,9 +1272,12 @@ class Player(Repeatable):
 
         return
 
-    def update_all_player_keys(self, ignore=[], event=None, **kwargs):
+    def update_all_player_keys(self, ignore=None, event=None, **kwargs):
         """ Updates the internal values of player keys that have been accessed e.g. p1.pitch. If there is a delay,
             then schedule a function to update the values in the future. """
+
+        if ignore is None:
+            ignore = []
 
         # Don't bother if no keys are being accessed
 
@@ -1334,7 +1337,10 @@ class Player(Repeatable):
 
         return
 
-    def update_player_key_from_event(self, event, time=None, delay=0, ignore=[], **kwargs):
+    def update_player_key_from_event(self, event, time=None, delay=0, ignore=None, **kwargs):
+
+        if ignore is None:
+            ignore = []
 
         timestamp = self.event_index if time is None else time
 
@@ -1848,8 +1854,11 @@ class Player(Repeatable):
     # e.g. follow
     #
 
-    def accompany(self, other, values=[0,2,4], debug=False):
+    def accompany(self, other, values=None, debug=False):
         """ Similar to "follow" but when the value has changed """
+
+        if values is None:
+            values = [0, 2, 4]
 
         if isinstance(other, self.__class__):
 
@@ -1926,7 +1935,8 @@ class Player(Repeatable):
             pitched
         """
         if other is not None:
-            assert(other.__class__ == self.__class__) # make sure it's using another player
+            if other.__class__ != self.__class__:
+                raise TypeError("versus() requires another Player instance")
             func = lambda x, y: f(x, y, key=key)
             self.condition  = lambda: func(self, other) == self
             other.condition = lambda: func(self, other) == other

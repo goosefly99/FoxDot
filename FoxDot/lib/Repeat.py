@@ -198,8 +198,9 @@ class Repeatable(object):
             
             raise TypeError(err)
 
-        assert callable(method)
-        
+        if not callable(method):
+            raise TypeError("{!r} resolved to a non-callable attribute".format(cmd))
+
         return attr_name, method
 
     def after(self, n, cmd, *args, **kwargs):
@@ -395,9 +396,11 @@ class Repeatable(object):
 class MethodCall:
     """ Class to represent an object's method call that,
         when called, schedules itself in the future """
-    def __init__(self, parent, method, n, cycle=None, args=(), kwargs={}):
-        
-        self.parent = parent  
+    def __init__(self, parent, method, n, cycle=None, args=(), kwargs=None):
+
+        if kwargs is None:
+            kwargs = {}
+        self.parent = parent
         self.method = method
 
         self.update(n, cycle, args, kwargs)
@@ -405,8 +408,11 @@ class MethodCall:
         self.after_update = False
         self.stopping = False
 
-    def update(self, n, cycle=None, args=(), kwargs={}):
+    def update(self, n, cycle=None, args=(), kwargs=None):
         """ Updates the values of the MethodCall. Re-adjusts the index if cycle has been changed """
+
+        if kwargs is None:
+            kwargs = {}
 
         if cycle is not None:
 
@@ -480,7 +486,8 @@ class MethodCall:
     def __call__(self, *args, **kwargs):
         """ Proxy for parent object __call__, calls the enclosed method and schedules it in the future. """
 
-        assert self.method is not None
+        if self.method is None:
+            raise RuntimeError("MethodCall invoked before method was set")
 
         # Return without scheduling if stopping
         

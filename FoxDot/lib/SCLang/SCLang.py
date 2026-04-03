@@ -8,7 +8,11 @@ from ..Settings import SC3_PLUGINS
 from copy import copy
 import os
 
-def format_args(args=[], kwargs={}, delim=': '):
+def format_args(args=None, kwargs=None, delim=': '):
+    if args is None:
+        args = []
+    if kwargs is None:
+        kwargs = {}
     return ", ".join([str(a) for a in args] + ["%s%s%s" % (key, delim, value) for key, value in kwargs.items()])
 
 class cls:

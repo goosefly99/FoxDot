@@ -65,8 +65,10 @@ from ..ServerManager import Server
 
 class Effect:
     server=Server
-    def __init__(self, foxdot_name, synthdef, args={}, control=False):
+    def __init__(self, foxdot_name, synthdef, args=None, control=False):
 
+        if args is None:
+            args = {}
         self.name      = foxdot_name
         self.synthdef  = synthdef
         self.filename  = EFFECTS_DIR + "/{}.scd".format(self.synthdef)

@@ -596,7 +596,9 @@ class workspace:
 
     # Scheduling tasks
     # ----------------
-    def addTask(self, target, args=(), kwargs={}):
+    def addTask(self, target, args=(), kwargs=None):
+        if kwargs is None:
+            kwargs = {}
         self.text.queue.put((target, args, kwargs))
         return
 

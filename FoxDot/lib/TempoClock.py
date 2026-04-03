@@ -187,7 +187,8 @@ class TempoClock(object):
         """ Sets the destination for OSC messages being compiled (the server is also the class
             that compiles them) via objects in the clock. Should be an instance of ServerManager -
             see ServerManager.py for more. """
-        assert isinstance(server, ServerManager)
+        if not isinstance(server, ServerManager):
+            raise TypeError("server must be a ServerManager instance")
         cls.server = server
         return
 
@@ -254,13 +255,9 @@ class TempoClock(object):
     def update_tempo(self, bpm):
         """ Schedules the bpm change at the next bar, returns the beat and start time of the next change """
 
-        try:
+        if bpm <= 0:
 
-            assert bpm > 0, "Tempo must be a positive number"
-
-        except AssertionError as err:
-
-            raise ValueError(err)
+            raise ValueError("Tempo must be a positive number")
 
         next_bar = self.next_bar()
 
@@ -330,13 +327,15 @@ class TempoClock(object):
 
     def set_cpu_usage(self, value):
         """ Sets the `sleep_time` attribute to values based on desired high/low/medium cpu usage """
-        assert 0 <= value <= 2
+        if not (0 <= value <= 2):
+            raise ValueError("cpu usage value must be 0, 1, or 2")
         self.sleep_time = self.sleep_values[value]
         return
 
     def set_latency(self, value):
         """ Sets the `latency` attribute to values based on desired high/low/medium latency """
-        assert 0 <= value <= 2
+        if not (0 <= value <= 2):
+            raise ValueError("latency value must be 0, 1, or 2")
         self.latency = self.latency_values[value]
         return
 
@@ -641,11 +640,7 @@ class TempoClock(object):
 
         # Make sure the object can actually be called
 
-        try:
-
-            assert callable(obj)
-
-        except AssertionError:
+        if not callable(obj):
 
             raise ScheduleError(obj)
 
@@ -757,10 +752,13 @@ class Queue(object):
     def __repr__(self):
         return "\n".join([str(item) for item in self.data]) if len(self.data) > 0 else "[]"
 
-    def add(self, item, beat, args=(), kwargs={}, is_priority=False):
+    def add(self, item, beat, args=(), kwargs=None, is_priority=False):
         """ Adds a callable object to the queue at a specified beat, args and kwargs for the
             callable object must be in a list and dict.
         """
+
+        if kwargs is None:
+            kwargs = {}
 
         # item must be callable to be schedule, so check args and kwargs are appropriate for it
 
@@ -878,8 +876,10 @@ class QueueBlock(object):
                         lambda x: True                       # And anything else
                       ]
                        
-    def __init__(self, parent, obj, t, args=(), kwargs={}, is_priority=False): # Why am I forcing an obj?
+    def __init__(self, parent, obj, t, args=(), kwargs=None, is_priority=False): # Why am I forcing an obj?
 
+        if kwargs is None:
+            kwargs = {}
         self.events         = [ [] for lvl in self.priority_levels ]
         self.called_events  = []
         self.called_objects = []
@@ -971,10 +971,10 @@ class QueueBlock(object):
 
 class QueueObj(object):
     """ Class representing each item in a `QueueBlock` instance """
-    def __init__(self, obj, args=(), kwargs={}):
+    def __init__(self, obj, args=(), kwargs=None):
         self.obj = obj
         self.args = args
-        self.kwargs = kwargs
+        self.kwargs = kwargs if kwargs is not None else {}
         self.called = False # flag to True when called by the block
     def __eq__(self, other):
         return other == self.obj

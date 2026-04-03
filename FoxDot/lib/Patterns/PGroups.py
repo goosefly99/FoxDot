@@ -111,11 +111,13 @@ class PGroupOr(metaPGroupPrime):
         between "bar" signs e.g. "|x2|" """
     bracket_style="|()"
     ignore = -1
-    def __init__(self, seq=[]):
+    def __init__(self, seq=None):
+        if seq is None:
+            seq = []
         metaPGroupPrime.__init__(self, seq)
 
         # May be changed to a Pattern
-        
+
         if self.__class__ is not PGroupOr:
         
             return
@@ -153,7 +155,9 @@ class PGroupXor(metaPGroupPrime):
     """ The delay of this PGroup is specified by the last value (not included in the data) """
     bracket_style="^()"
     ignore = -1
-    def __init__(self, seq=[]):
+    def __init__(self, seq=None):
+        if seq is None:
+            seq = []
         if isinstance(seq, self.__class__):
             self.data = seq.data
             self.meta = seq.meta
@@ -205,7 +209,8 @@ def offlayer(self, method, dur=0.5, *args, **kwargs):
         args = [self] + list(args)
     else:
         func = getattr(self, method)
-        assert callable(func)
+        if not callable(func):
+            raise TypeError("{!r} is not callable".format(method))
 
     return self.zip(func(*args, **kwargs), dtype=lambda a, b: PGroupXor([a, b, dur]))
     

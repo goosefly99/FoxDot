@@ -684,7 +684,8 @@ class metaPattern(object):
     @loop_pattern_method
     def loop(self, n, f=None):
         """ Repeats this pattern n times """
-        assert n > 0, ".loop() parameter must be greater than 0"
+        if n <= 0:
+            raise ValueError(".loop() parameter must be greater than 0")
         new = values = list(self)
         for i in range(n - 1):
             if callable(f):
@@ -845,7 +846,8 @@ class metaPattern(object):
             return self.zip(list(map(method, self.data)))
         else:
             func = getattr(self, method)
-            assert callable(func)
+            if not callable(func):
+                raise TypeError("{!r} is not callable".format(method))
             return self.zip(func(*args, **kwargs))
 
     def every(self, n, method, *args, **kwargs):
@@ -1061,10 +1063,13 @@ class PGroup(metaPattern):
     # set this value to negative how many trailing values you don't want treated as "normal"
     ignore = 0
 
-    def __init__(self, seq=[], *args):
+    def __init__(self, seq=None, *args):
+
+        if seq is None:
+            seq = []
 
         if not args:
-            
+
             if isinstance(seq, metaPattern):
 
                 seq = seq.data

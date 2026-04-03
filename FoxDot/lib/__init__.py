@@ -104,7 +104,8 @@ def update_foxdot_clock(clock):
     """ Tells the TimeVar, Player, and MidiIn classes to use
         a new instance of TempoClock. """
 
-    assert isinstance(clock, TempoClock)
+    if not isinstance(clock, TempoClock):
+        raise TypeError("clock must be a TempoClock instance")
 
     for item in (TimeVar, Player, MidiIn):
 
@@ -119,7 +120,8 @@ def update_foxdot_server(serv):
         a new ServerManager instance.
     """
 
-    assert isinstance(serv, ServerManager)
+    if not isinstance(serv, ServerManager):
+        raise TypeError("server must be a ServerManager instance")
 
     TempoClock.set_server(serv)
     SynthDefs.set_server(serv)
