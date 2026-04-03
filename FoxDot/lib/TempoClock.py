@@ -615,7 +615,9 @@ class TempoClock(object):
 
                 if len(self.current_block):
 
-                    threading.Thread(target=self.__run_block, args=(self.current_block, beat)).start()
+                    t = threading.Thread(target=self.__run_block, args=(self.current_block, beat))
+                    t.daemon = True
+                    t.start()
 
             # If using a midi-clock, update the values
 

@@ -2665,7 +2665,7 @@ class OSCStreamingServer(TCPServer):
     def start(self):
         """ Start the server thread. """
         self._server_thread = threading.Thread(target=self.serve_forever)
-        self._server_thread.setDaemon(True)
+        self._server_thread.daemon = True
         self._server_thread.start()
         
     def stop(self):

@@ -327,7 +327,8 @@ class FileSynthDef(SynthDefBaseClass):
         pass
 
     def __str__(self):
-        return open(self.filename, 'rb').read()
+        with open(self.filename, 'rb') as f:
+            return f.read()
 
 '''
     SynthDefProxy Class
