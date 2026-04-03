@@ -1,7 +1,6 @@
-from __future__ import absolute_import
 from random import choice
 from copy import deepcopy
-import Queue
+import queue
 from . import Grammar
 
 class null:
@@ -27,7 +26,7 @@ class Ghost:
 
         self.players = {}
         self.index = [0, 0]
-        self.instructions = Queue.Queue()
+        self.instructions = queue.Queue()
         self.running = True
 
     def defineInstructions(self, original, syntax):
@@ -57,7 +56,7 @@ class Ghost:
 
             else:
                 
-                 raise Queue.Empty()
+                 raise queue.Empty()
                 
             # 2. Replace
 
@@ -73,7 +72,7 @@ class Ghost:
 
             self.widget.root.after(50, self.write)
 
-        except Queue.Empty:
+        except queue.Empty:
 
             if self.running == True:
 
@@ -107,7 +106,7 @@ class Ghost:
 
         else:
 
-            return choice(self.players.keys())
+            return choice(list(self.players.keys()))
 
     def act(self):
         ''' main program '''

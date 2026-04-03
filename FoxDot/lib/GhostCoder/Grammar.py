@@ -18,7 +18,7 @@ if __name__ != "__main__":
     del patternNames['PSine']
 
     synthdefNames = [name for name, obj in vars(SynthDefs).items() \
-                if isinstance(obj, SynthDef.SynthDef)]
+                if isinstance(obj, SynthDef)]
 
 # Grammar
 
