@@ -64,12 +64,12 @@ class Timing(object):
 
     def start(self):
         if self._start is not None:
-            self._log.warn("Entering %s twice!", self)
+            self._log.warning("Entering %s twice!", self)
         self._start = time.time()
 
     def finish(self):
         if self._start is None:
-            self._log.warn("Finishing %s before start!", self)
+            self._log.warning("Finishing %s before start!", self)
             return
         diff = 1000 * (time.time() - self._start)
         formatted_messages = ''
