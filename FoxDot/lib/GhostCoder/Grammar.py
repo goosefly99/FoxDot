@@ -10,7 +10,7 @@ if __name__ != "__main__":
     from types import FunctionType
 
     patternNames = {name: obj for name, obj in vars(Sequences).items() \
-                    if (type(obj) == FunctionType and name.startswith("P"))}
+                    if (isinstance(obj, FunctionType) and name.startswith("P"))}
 
     # To ignore    
     del patternNames['PSq']

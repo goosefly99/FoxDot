@@ -12,8 +12,6 @@ The server runs in its own daemon thread so it does not block the main
 FoxDot thread.  A second timer thread handles state broadcasts.
 """
 
-from __future__ import annotations
-
 import asyncio
 import logging
 import threading

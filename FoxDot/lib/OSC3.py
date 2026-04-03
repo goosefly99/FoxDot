@@ -284,7 +284,7 @@ class OSCMessage(object):
         'argument' may also be a list or tuple, in which case its elements
         will get appended one-by-one, all using the provided typehint
         """
-        if type(argument) == dict:
+        if isinstance(argument, dict):
             argument = list(argument.items())
         elif isinstance(argument, OSCMessage):
             raise TypeError("Can only append 'OSCMessage' to 'OSCBundle'")
@@ -367,7 +367,7 @@ class OSCMessage(object):
         out = list(values)
         out.extend(list(self.values()))
         
-        if type(values) == tuple:
+        if isinstance(values, tuple):
             return tuple(out)
         
         return out
@@ -423,14 +423,14 @@ class OSCMessage(object):
     def _buildItemList(self, values, typehint=None):
         if isinstance(values, OSCMessage):
             items = list(values.items())
-        elif type(values) == list:
+        elif isinstance(values, list):
             items = []
             for val in values:
-                if type(val) == tuple:
+                if isinstance(val, tuple):
                     items.append(val[:2])
                 else:
                     items.append((typehint, val))
-        elif type(values) == tuple:
+        elif isinstance(values, tuple):
             items = [values[:2]]
         else:        
             items = [(typehint, values)]
@@ -645,7 +645,7 @@ class OSCBundle(OSCMessage):
             binary = OSCBlob(argument.getBinary())
         else:
             msg = OSCMessage(self.address)
-            if type(argument) == dict:
+            if isinstance(argument, dict):
                 if 'addr' in argument:
                     msg.setAddress(argument['addr'])
                 if 'args' in argument:
@@ -958,7 +958,7 @@ def getUrlStr(*args):
     if not len(args):
         return ""
         
-    if type(args[0]) == tuple:
+    if isinstance(args[0], tuple):
         host = args[0][0]
         port = args[0][1]
         args = args[1:]
@@ -980,7 +980,7 @@ def getUrlStr(*args):
     else:
         host = 'localhost'
     
-    if type(port) == int:
+    if isinstance(port, int):
         return "%s:%d%s" % (host, port, prefix)
     else:
         return host + prefix
@@ -1417,10 +1417,10 @@ class OSCMultiClient(OSCClient):
           - prefix (string): The OSC-address prefix prepended to the address of each OSCMessage
           sent to this OSCTarget (optional)
         """
-        if type(address) in str:
+        if isinstance(address, str):
             address = self._searchHostAddr(address)
-                
-        elif (type(address) == tuple):
+
+        elif isinstance(address, tuple):
             (host, port) = address[:2]
             try:
                 host = socket.gethostbyname(host)
@@ -1459,28 +1459,28 @@ class OSCMultiClient(OSCClient):
         the 'address' argument can be a ((host, port) tuple), or a hostname.
         If the 'prefix' argument is given, the Target is only deleted if the address and prefix match.
         """
-        if type(address) in str:
-            address = self._searchHostAddr(address) 
+        if isinstance(address, str):
+            address = self._searchHostAddr(address)
 
-        if type(address) == tuple:
+        if isinstance(address, tuple):
             (host, port) = address[:2]
             try:
                 host = socket.gethostbyname(host)
             except socket.error:
                 pass
             address = (host, port)
-            
+
             self._delTarget(address, prefix)
-        
+
     def hasOSCTarget(self, address, prefix=None):
         """Return True if the given OSCTarget exists in the Client's dict.
         the 'address' argument can be a ((host, port) tuple), or a hostname.
         If the 'prefix' argument is given, the return-value is only True if the address and prefix match.
         """
-        if type(address) in str:
-            address = self._searchHostAddr(address) 
+        if isinstance(address, str):
+            address = self._searchHostAddr(address)
 
-        if type(address) == tuple:
+        if isinstance(address, tuple):
             (host, port) = address[:2]
             try:
                 host = socket.gethostbyname(host)
@@ -1515,10 +1515,10 @@ class OSCMultiClient(OSCClient):
         'address' can be a (host, port) tuple, or a 'host' (string), in which case the first matching OSCTarget is returned
         Returns (None, ['',{}]) if address not found.
         """
-        if type(address) in str:
-            address = self._searchHostAddr(address) 
+        if isinstance(address, str):
+            address = self._searchHostAddr(address)
 
-        if (type(address) == tuple): 
+        if isinstance(address, tuple):
             (host, port) = address[:2]
             try:
                 host = socket.gethostbyname(host)
@@ -2222,16 +2222,16 @@ class OSCServer(UDPServer, OSCAddressSpace):
         url = ""
         have_port = False
         for item in data:
-            if (type(item) == int) and not have_port:
+            if isinstance(item, int) and not have_port:
                 url += ":%d" % item
                 have_port = True
-            elif type(item) in str:
+            elif isinstance(item, str):
                 url += item
 
         (addr, tail) = parseUrlStr(url)
         (prefix, filters) = parseFilterStr(tail)
-        
-        if addr != None:
+
+        if addr is not None:
             (host, port) = addr
             if not host:
                 host = client_address[0]
@@ -2240,30 +2240,30 @@ class OSCServer(UDPServer, OSCAddressSpace):
             addr = (host, port)
         else:
             addr = client_address
-        
+
         self.client._setTarget(addr, prefix, filters)
-    
+
         trg = self.client.getOSCTargetStr(addr)
-        if trg[0] != None:
+        if trg[0] is not None:
             reply = OSCMessage(self.info_prefix)
             reply.append(('target',) + trg)
             return reply
-        
+
     def _unsubscribe(self, data, client_address):
         """Handle the actual unsubscription. the provided 'data' is concatenated together to form a
-        '<host>:<port>[<prefix>]' string, which is then passed to 
+        '<host>:<port>[<prefix>]' string, which is then passed to
         parseUrlStr() to actually retreive <host>, <port> & <prefix>.
-        
-        This 'long way 'round' approach (almost) guarantees that the unsubscription works, 
-        regardless of how the bits of the <url> are encoded in 'data'. 
+
+        This 'long way 'round' approach (almost) guarantees that the unsubscription works,
+        regardless of how the bits of the <url> are encoded in 'data'.
         """
         url = ""
         have_port = False
         for item in data:
-            if (type(item) == int) and not have_port:
+            if isinstance(item, int) and not have_port:
                 url += ":%d" % item
                 have_port = True
-            elif type(item) in str:
+            elif isinstance(item, str):
                 url += item
 
         (addr, _) = parseUrlStr(url)

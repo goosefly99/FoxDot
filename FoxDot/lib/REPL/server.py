@@ -7,8 +7,6 @@ while providing a single evaluate() method that runs FoxDot code safely
 from any thread.
 """
 
-from __future__ import annotations
-
 import io
 import logging
 import sys

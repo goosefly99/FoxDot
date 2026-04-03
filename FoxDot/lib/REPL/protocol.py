@@ -18,8 +18,6 @@ Stdin transport protocol:
     Output: JSON result on a single line, followed by a blank line.
 """
 
-from __future__ import annotations
-
 import json
 from dataclasses import asdict, dataclass, field
 from typing import Optional

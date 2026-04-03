@@ -18,8 +18,6 @@ Example session::
                               ← blank line after result
 """
 
-from __future__ import annotations
-
 import sys
 import threading
 

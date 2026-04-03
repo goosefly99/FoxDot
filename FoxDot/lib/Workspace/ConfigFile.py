@@ -70,9 +70,8 @@ class Config:
 
     def save_changes(self):
         text = self.get_text()
-        f = open(self.filepath, "w") # writing a file
-        f.write(text)
-        f.close()
+        with open(self.filepath, "w") as f:
+            f.write(text)
         self.root.destroy()
         tkMessageBox.showwarning(title="Just a heads up", message="A restart of FoxDot is required for the changes to take effect")
         return

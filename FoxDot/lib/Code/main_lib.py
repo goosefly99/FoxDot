@@ -5,8 +5,6 @@ import time
 from traceback import format_exc as error_stack
 from types import CodeType, FunctionType
 
-TypeType = type
-
 from ..Utils import modi
 from ..Settings import *
 
@@ -251,7 +249,7 @@ def write_to_file(fn, text):
 
 def classes(module):
     """ Returns a list of class names defined in module """
-    return [name for name, data in vars(module).items() if type(data) == TypeType]
+    return [name for name, data in vars(module).items() if isinstance(data, type)]
 
 def instances(module, cls):
     """ Returns a list of instances of cls from module """
@@ -259,4 +257,4 @@ def instances(module, cls):
 
 def functions(module):
     """ Returns a list of function names defined in module """
-    return [name for name, data in vars(module).items() if type(data) == FunctionType]
+    return [name for name, data in vars(module).items() if isinstance(data, FunctionType)]
