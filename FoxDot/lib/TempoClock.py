@@ -754,6 +754,12 @@ class Queue(object):
     def __repr__(self):
         return "\n".join([str(item) for item in self.data]) if len(self.data) > 0 else "[]"
 
+    def __len__(self):
+        return len(self.data)
+
+    def __iter__(self):
+        return iter(self.data)
+
     def add(self, item, beat, args=(), kwargs=None, is_priority=False):
         """ Adds a callable object to the queue at a specified beat, args and kwargs for the
             callable object must be in a list and dict.
