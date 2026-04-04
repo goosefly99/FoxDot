@@ -93,7 +93,7 @@ def format_kwargs(d):
 
 def GENERATE_PATTERN(keyword=None):
 
-    pat = choose(patternNames.values())
+    pat = choose(list(patternNames.values()))
 
     # Make sure we get right number of args
     num_defs = len(pat.__defaults__) if pat.__defaults__ is not None else 0
@@ -197,7 +197,7 @@ def CHANGE_DEGREE(*args, **kwargs):
 
 def CHANGE_KWARG(*args, **kwargs):
     if kwargs['kwargs']:
-        kw, value = choose(kwargs['kwargs'].items())
+        kw, value = choose(list(kwargs['kwargs'].items()))
         if random() > 0.5:
             kwargs['kwargs'][kw] = GEN_CHANGE_VALUE(value, kw)
         else:
